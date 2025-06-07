@@ -1,4 +1,5 @@
-function lesion_dots_trial_free_P5(p,state)
+function lesion_dots_trial_P6(p,state)
+%This phase adjusts the stimulus duration
 
 %use normal functionality in states
 pldapsDefaultTrialFunction(p,state);
@@ -17,7 +18,7 @@ switch state
         if p.trial.state==p.trial.stimulus.states.START
             Screen(p.trial.display.ptr, 'FillRect', p.trial.display.bgColor);
         elseif p.trial.state==p.trial.stimulus.states.STIMON || p.trial.state==p.trial.stimulus.states.INCORRECT
-            showStimulus(p);
+            showStimulus(p); %we adjust duration in this function
             
         end
      
@@ -42,7 +43,6 @@ switch p.trial.state
         if p.trial.led.state==0
             %turn LED on
             pds.LED.LEDOn(p);
-            pds.LED.AnyLEDOn(p,23);
             p.trial.led.state=1;
             %note timepoint
             p.trial.stimulus.timeTrialLedOn = p.trial.ttime;
@@ -78,19 +78,16 @@ switch p.trial.state
                 p.trial.state=p.trial.stimulus.states.STIMON;
             end
         end
-    
+
     case p.trial.stimulus.states.MOVE %wait for ferret to cross midline
         if activePort==p.trial.stimulus.port.MIDDLE
             %advance state
             p.trial.state=p.trial.stimulus.states.STIMON;
-            pds.LED.stimLEDOn(p)
         end
-
         
     case p.trial.stimulus.states.STIMON %stimulus shown; port selected in response
         %check whether left or right port chosen
         if ismember(activePort, [p.trial.stimulus.port.LEFT p.trial.stimulus.port.RIGHT])
-            pds.LED.stimLEDOff(p);
             %note time
             p.trial.stimulus.timeTrialFirstResp = p.trial.ttime;
             p.trial.stimulus.frameTrialFirstResp = p.trial.iFrame;
@@ -150,7 +147,6 @@ switch p.trial.state
                     %note time
                     p.trial.stimulus.timeTrialFinalResp = p.trial.ttime;
                     p.trial.stimulus.frameTrialFinalResp = p.trial.iFrame;
-                    pds.LED.AnyLEDOff(p,23);
                     
                     if activePort==p.trial.stimulus.port.LEFT
                         amount=p.trial.behavior.reward.propAmtIncorrect*p.trial.behavior.reward.amount(p.trial.stimulus.rewardIdx.LEFT);
@@ -215,30 +211,30 @@ function p=trialSetup(p)
     if ~isfield(p.trialMem,'correct')
         p.trialMem.correct = 0;
     end
-    if ~isfield(p.trialMem,'stairstart')
-        p.trialMem.stairstart = 1; %mark transition between normal and staircase
-    end
 
     if ~isfield(p.trialMem,'durStim')
         p.trialMem.durStim=p.trial.stimulus.durStim;
     end
-    if ~isfield(p.trialMem,'offset')
-        p.trialMem.offset=p.trial.stimulus.offset;
-    end
-    
+
     % set up stimulus    
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
     PixPerDeg = 1/DegPerPix;
     
     %transform stimulus sizes into px
-    %p.trial.stimulus.width=p.conditions{p.trial.pldaps.iTrial}.width;
     p.trial.stimulus.height=p.trial.stimulus.width;
     p.trial.stimulus.pWidth=round(p.trial.stimulus.width*PixPerDeg);
     p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
-    
-    
+
+    %stimulus center
+    p.trial.stimulus.centerX = p.trial.dispaly.pWidth/2;
+    p.trial.stimulus.stimSide = p.conditions{p.trial.pldaps.iTrial}.stimSide;
+    p.trial.stimulus.offsetPx=round(p.trial.stimulus.offset*PixPerDeg);
+    p.trial.stimulus.centerX=p.trial.stimulus.centerX+...
+        p.trial.stimulus.stimSide*p.trial.stimulus.offsetPx;
+
+        
     %number of dots - density is in dots/deg^2, size in deg
-    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trial.stimulus.width*...
+    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trialMem.width*...
         p.trial.stimulus.height);
     
     %dot size
@@ -249,33 +245,9 @@ function p=trialSetup(p)
     
     %dot lifetime in frames (lifetime is in ms)
     p.trial.stimulus.dotLifeFr = round(p.trial.stimulus.dotLifetime*p.trial.stimulus.frameRate/1000);
-    
-    %dot coherence/staircase
-    p.trial.stimulus.stair = p.conditions{p.trial.pldaps.iTrial}.stair;
-    if p.trial.stimulus.stair ==0
-        p.trialMem.stairstart=1;
-        p.trialMem.dotCoherence=p.trial.stimulus.dotCoherence; %for bookkeeping
-    else
-        if p.trialMem.stairstart==1
-            p.trialMem.dotCoherence=p.trial.stimulus.dotCoherence;
-            p.trialMem.stairstart=0;
-            p.trialMem.correct=0;
-        else
-            p.trial.stimulus.dotCoherence = p.trialMem.dotCoherence;
-        end
-    end
-    
+       
     %direction
     p.trial.stimulus.direction = p.conditions{p.trial.pldaps.iTrial}.direction;
-    
-    %stimulus center
-    p.trial.stimulus.centerX = p.trial.stimulus.centerX;
-
-    %stimulus center
-    p.trial.stimulus.stimSide = p.conditions{p.trial.pldaps.iTrial}.stimSide;
-    offsetconv = p.trial.stimulus.tunnel_exit*tan(deg2rad(p.trialMem.offset))*p.trial.stimulus.ppcm;
-    p.trial.stimulus.centerX = p.trial.stimulus.centerX+...
-        p.trial.stimulus.stimSide*offsetconv;
     
 
     %initialize frame
@@ -350,8 +322,7 @@ function showStimulus(p)
                 randpos(2,idx(i))=-1*sign(yproj(idx(i)))*p.trial.stimulus.pHeight/2;
             end
         end
-    
-    
+        
         %if lifetime is expired, randomly assign new direction
         if p.trial.stimulus.dotLifeFr>0
             idx=find(lifetime==0);
@@ -374,11 +345,8 @@ function showStimulus(p)
         p.trial.stimulus.randdir = randdir;
         Screen('DrawDots', p.trial.display.ptr, p.trial.stimulus.dotpos{p.trial.stimulus.frameI}, ...
             p.trial.stimulus.dotSizePix, p.trial.stimulus.dotColor, ...
-            [p.trial.stimulus.centerX p.trial.stimulus.centerY],1);
-        %pause(p.trialMem.durStim)
-        if f == p.trial.stimulus.nrFrames
-            pds.LED.stimLEDOff(p);
-        end
+             [p.trial.stimulus.centerX p.trial.stimulus.centerY],1);
+
     end
 
 %------------------------------------------------------------------%
@@ -387,29 +355,20 @@ function cleanUpandSave(p)
     %stop camera and set trigger to low
     pds.behavcam.stopcam(p);
     pds.behavcam.triggercam(p,0);
-    
-    pds.LED.AnyLEDOff(p,23);
-    
+        
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
     disp(['Current Stim duration:  ' num2str(p.trialMem.durStim)])
-    disp(['Current Offset:  ' num2str(p.trialMem.offset) ' spatial degrees'])
-    disp(['Offset max is 30 spatial degrees'])
     %show reward amount
     if p.trial.pldaps.draw.reward.show
-        pds.behavior.reward.showReward(p,{'S';'L';'R';'M'})
+        pds.behavior.reward.showReward(p,{'S';'L';'R'})
     end
     
     %show stats
     pds.behavior.countTrial(p,p.trial.pldaps.goodtrial); %updates counters
-    %update the coherence list
-    idx=find(p.trialMem.stats.count.coh(:,1)==p.trialMem.dotCoherence);
-    p.trialMem.stats.count.coh(idx,2)=p.trialMem.stats.count.coh(idx,2)+1;
-
     disp(num2str(vertcat(p.trialMem.stats.val,p.trialMem.stats.count.Ntrial,...
         p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
-    %disp(p.trialMem.stats.count.coh)
-    
+
     switch p.trial.userInput
         case 1 %right key
             p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
@@ -417,33 +376,7 @@ function cleanUpandSave(p)
         case 2 %left key
             p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
             disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
-        case 3 %up key
-            p.trialMem.offset=p.trialMem.offset + (p.trial.stimulus.delta_offset);
-            disp(['Offset increased to ' num2str(p.trialMem.offset)])
-        case 4 %down key
-            p.trialMem.offset=p.trialMem.offset - (p.trial.stimulus.delta_offset);
-            disp(['Offset decreased to ' num2str(p.trialMem.offset)])
     end
-
-    if p.trial.stimulus.stair == 1
-        %staircase
-        if p.trial.pldaps.goodtrial & p.trialMem.correct == 2
-            p.trialMem.dotCoherence = p.trialMem.dotCoherence - p.trial.stimulus.step;
-            if p.trialMem.dotCoherence<0
-                p.trialMem.dotCoherence=0;
-            end
-            p.trialMem.correct = 0;
-        elseif ~p.trial.pldaps.goodtrial
-            p.trialMem.dotCoherence = p.trialMem.dotCoherence + p.trial.stimulus.step;
-            if p.trialMem.dotCoherence>1
-                p.trialMem.dotCoherence=1;
-            end
-            p.trialMem.correct = 0;
-        end
-        disp(['Coherence on the next trial: ' num2str(p.trialMem.dotCoherence)]);
-    end
-    
-    
 
 %% Helper functions
 %-------------------------------------------------------------------%

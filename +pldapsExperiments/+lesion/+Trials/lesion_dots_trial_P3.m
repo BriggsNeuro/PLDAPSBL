@@ -1,4 +1,5 @@
 function lesion_dots_trial_P3(p,state)
+%This phase adjusts the fot density and dot size 
 
 %use normal functionality in states
 pldapsDefaultTrialFunction(p,state);
@@ -71,9 +72,18 @@ switch p.trial.state
             pds.behavior.reward.give(p,amount,p.trial.behavior.reward.channel.START);
             
             %advance state
+            if p.trial.stimulus.midpointIR %needs to cross midline first to show stimulus
+                p.trial.state=p.trial.stimulus.states.MOVE;
+            else %immediately show stimulus
+                p.trial.state=p.trial.stimulus.states.STIMON;
+            end
+        end
+        
+    case p.trial.stimulus.states.MOVE %wait for ferret to cross midline
+        if activePort==p.trial.stimulus.port.MIDDLE
+            %advance state
             p.trial.state=p.trial.stimulus.states.STIMON;
         end
-    
         
     case p.trial.stimulus.states.STIMON %stimulus shown; port selected in response
         %check whether left or right port chosen
@@ -202,26 +212,29 @@ function p=trialSetup(p)
         p.trialMem.correct = 0;
     end
 
-    if ~isfield(p.trialMem,'width')
-        p.trialMem.width=p.trial.stimulus.width;
-    end   
-
+    if ~isfield(p.trialMem,'dotSize')
+        p.trialMem.dotSize=p.trial.stimulus.dotSize;
+    end
+    if ~isfield(p.trialMem,'dotDensity')
+        p.trialMem.dotDensity=p.trial.stimulus.dotDensity;
+    end
+        
     % set up stimulus    
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
     PixPerDeg = 1/DegPerPix;
     
-    %transform stimulus sizes into px
-    p.trial.stimulus.height=p.trialMem.width;
-    p.trial.stimulus.pWidth=round(p.trialMem.width*PixPerDeg);
-    p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
-    
+    %stimulus sizes - simply set to screen size here
+    p.trial.stimulus.width=p.trial.display.dWidth;
+    p.trial.stimulus.height=p.trial.display.dHeight;
+    p.trial.stimulus.pWidth=p.trial.display.pWidth;
+    p.trial.stimulus.pHeight=p.trial.display.pHeight;
     
     %number of dots - density is in dots/deg^2, size in deg
-    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trialMem.width*...
+    p.trial.stimulus.nrDots=round(p.trialMem.dotDensity*p.trial.stimulus.width*...
         p.trial.stimulus.height);
     
     %dot size
-    p.trial.stimulus.dotSizePix = round(p.trial.stimulus.dotSize*PixPerDeg);
+    p.trial.stimulus.dotSizePix = round(p.trialMem.dotSize*PixPerDeg);
     
     %dot displacement per frame (speed is in deg/sec)
     p.trial.stimulus.deltaF=p.trial.stimulus.dotSpeed/p.trial.stimulus.frameRate*PixPerDeg;
@@ -341,7 +354,8 @@ function cleanUpandSave(p)
         
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
-    disp(['Current width:  ' num2str(p.trialMem.width)])
+    disp(['Current dotSize:  ' num2str(p.trialMem.dotSize)])
+    disp(['Current dotDensity:  ' num2str(p.trialMem.dotDensity)])
     %show reward amount
     if p.trial.pldaps.draw.reward.show
         pds.behavior.reward.showReward(p,{'S';'L';'R'})
@@ -353,14 +367,18 @@ function cleanUpandSave(p)
         p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
 
     switch p.trial.userInput
-
-         case 1 %right key
-            p.trialMem.width=p.trialMem.width+p.trial.stimulus.delta_width;
-            disp(['increased stim width to ' num2str(p.trialMem.width)])
-        case 2 %left key
-            p.trialMem.width=p.trialMem.width-p.trial.stimulus.delta_width;
-            disp(['decreased stim width to ' num2str(p.trialMem.width)])
-       
+        case 1 %left
+            p.trialMem.dotDensity=p.trialMem.dotDensity+p.trial.stimulus.delta_den;
+            disp(['Dot density increased to ' num2str(p.trialMem.dotDensity)])
+        case 2 %right
+            p.trialMem.dotDensity=p.trialMem.dotDensity-p.trial.stimulus.delta_den;
+            disp(['Dot density decreased to ' num2str(p.trialMem.dotDensity)])
+        case 3 %up
+            p.trialMem.dotSize=p.trialMem.dotSize + (p.trial.stimulus.delta_size);
+            disp(['Dot Size increased to ' num2str(p.trialMem.dotSize)])
+        case 4 %down
+            p.trialMem.dotSize=p.trialMem.dotSize - (p.trial.stimulus.delta_size);
+            disp(['Dot Size decreased to ' num2str(p.trialMem.dotSize)])
     end
 
 %% Helper functions

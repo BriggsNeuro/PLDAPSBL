@@ -1,5 +1,6 @@
 function p = lesion_dots_setup_P3(p)
-%This phase adjusts the stimulus size  
+%This phase adjusts the dot density and dot size 
+%use left/right keys to toggle size, up/down to toggle density
 
 %% basic definitions
 p = pdsDefaultTrialStructureBL(p); 
@@ -20,9 +21,6 @@ c=generateCondList(cond,side,'pseudo',500);
 p.conditions=c;
 
 p.trial.pldaps.finish = length(p.conditions);
-
-
-
 
 %% display stats
 %percent correct for left right

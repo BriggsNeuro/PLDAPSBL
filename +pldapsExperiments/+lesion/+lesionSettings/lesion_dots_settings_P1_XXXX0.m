@@ -19,7 +19,6 @@ s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
 s.stimulus.durStim = 30; %sec
 
-%2/23/25 - Issue w/ IR ports after IR slot expansion; adding these lines
-s.datapixx.adc.channels = [2 4 6];
-s.ports.nports=3;
+%s.datapixx.adc.channels = [2 4 6];
+%s.ports.nports=3;
 
