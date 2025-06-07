@@ -226,7 +226,7 @@ function p=trialSetup(p)
     p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
 
     %stimulus center
-    p.trial.stimulus.centerX = p.trial.dispaly.pWidth/2;
+    p.trial.stimulus.centerX = p.trial.display.pWidth/2;
     p.trial.stimulus.stimSide = p.conditions{p.trial.pldaps.iTrial}.stimSide;
     p.trial.stimulus.offsetPx=round(p.trial.stimulus.offset*PixPerDeg);
     p.trial.stimulus.centerX=p.trial.stimulus.centerX+...
@@ -234,7 +234,7 @@ function p=trialSetup(p)
 
         
     %number of dots - density is in dots/deg^2, size in deg
-    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trialMem.width*...
+    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trial.stimulus.width*...
         p.trial.stimulus.height);
     
     %dot size
