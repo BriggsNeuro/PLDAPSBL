@@ -1,4 +1,4 @@
-function dotstrial_free_patch(p,state)
+function lesion_dots_trial_free_P1(p,state)
 
 %use normal functionality in states
 pldapsDefaultTrialFunction(p,state);
@@ -225,6 +225,13 @@ function p=trialSetup(p)
     if ~isfield(p.trialMem,'offset')
         p.trialMem.offset=p.trial.stimulus.offset;
     end
+
+    if ~isfield(p.trialMem,'dotSize')
+        p.trialMem.dotSize=p.trial.stimulus.dotSize;
+    end
+    if ~isfield(p.trialMem,'dotDensity')
+        p.trialMem.dotDensity=p.trial.stimulus.dotDensity;
+    end
     
     % set up stimulus    
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
@@ -238,11 +245,11 @@ function p=trialSetup(p)
     
     
     %number of dots - density is in dots/deg^2, size in deg
-    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trial.stimulus.width*...
+    p.trial.stimulus.nrDots=round(p.trialMem.dotDensity*p.trial.stimulus.width*...
         p.trial.stimulus.height);
     
     %dot size
-    p.trial.stimulus.dotSizePix = round(p.trial.stimulus.dotSize*PixPerDeg);
+    p.trial.stimulus.dotSizePix = round(p.trialMem.dotSize*PixPerDeg);
     
     %dot displacement per frame (speed is in deg/sec)
     p.trial.stimulus.deltaF=p.trial.stimulus.dotSpeed/p.trial.stimulus.frameRate*PixPerDeg;
@@ -392,9 +399,8 @@ function cleanUpandSave(p)
     
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
-    disp(['Current Stim duration:  ' num2str(p.trialMem.durStim)])
-    disp(['Current Offset:  ' num2str(p.trialMem.offset) ' spatial degrees'])
-    disp(['Offset max is 30 spatial degrees'])
+    disp(['Current dotSize:  ' num2str(p.trialMem.dotSize)])
+    disp(['Current dotDensity:  ' num2str(p.trialMem.dotDensity)])
     %show reward amount
     if p.trial.pldaps.draw.reward.show
         pds.behavior.reward.showReward(p,{'S';'L';'R';'M'})
@@ -411,18 +417,18 @@ function cleanUpandSave(p)
     %disp(p.trialMem.stats.count.coh)
     
     switch p.trial.userInput
-        case 1
-            p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
-            disp(['increased stim duration to ' num2str(p.trialMem.durStim)])
-        case 2
-            p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
-            disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
-        case 3
-            p.trialMem.offset=p.trialMem.offset + (p.trial.stimulus.delta_offset);
-            disp(['Offset increased to ' num2str(p.trialMem.offset)])
-        case 4
-            p.trialMem.offset=p.trialMem.offset - (p.trial.stimulus.delta_offset);
-            disp(['Offset decreased to ' num2str(p.trialMem.offset)])
+        case 1 %left
+            p.trialMem.dotDensity=p.trialMem.dotDensity+p.trial.stimulus.delta_den;
+            disp(['Dot density increased to ' num2str(p.trialMem.dotDensity)])
+        case 2 %right
+            p.trialMem.dotDensity=p.trialMem.dotDensity-p.trial.stimulus.delta_den;
+            disp(['Dot density decreased to ' num2str(p.trialMem.dotDensity)])
+        case 3 %up
+            p.trialMem.dotSize=p.trialMem.dotSize + (p.trial.stimulus.delta_size);
+            disp(['Dot Size increased to ' num2str(p.trialMem.dotSize)])
+        case 4 %down
+            p.trialMem.dotSize=p.trialMem.dotSize - (p.trial.stimulus.delta_size);
+            disp(['Dot Size decreased to ' num2str(p.trialMem.dotSize)])
     end
 
     if p.trial.stimulus.stair == 1

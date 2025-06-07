@@ -1,11 +1,11 @@
-function p = dots_setup_free_patch(p)
+function p = lesion_dots_setup_free_P5(p)
 %experiment setup file for a simple test experiment
 
 %% basic definitions
 p = pdsDefaultTrialStructureNL(p); 
 
 %% set the trial function: the function that gets called for each frame state
-p.trial.pldaps.trialFunction='pldapsExperiments.lesion.dotstrial_free_patch';
+p.trial.pldaps.trialFunction='pldapsExperiments.lesion.lesionStimuli.dots.Trials.lesion_dots_trial_free_P5';
 
 %% set general parameters
 p.trial.stimulus.forceCorrect = 1;
