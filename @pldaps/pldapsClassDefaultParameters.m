@@ -176,7 +176,7 @@ s.  datapixx.   dio.    useForReward = 0;
 %s.	pldaps.	dirs.
  s.	pldaps.	dirs.	data = '~/pldapsData';
 s.	pldaps.	dirs.	dataTmp = '~/pldapsTemp'; 
- s.	pldaps.	dirs.	wavfiles = '~/PLDAPSNL/beepsounds';
+ s.	pldaps.	dirs.	wavfiles = '~/PLDAPSBL/beepsounds';
 
 %s.	pldaps.	draw.
 %s.	pldaps.	draw.	cursor.

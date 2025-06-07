@@ -100,7 +100,7 @@ function p=trialSetup(p)
 
 %set up initialization stimulus (this could be in settings file)
 p.trial.stimulus.iniColor=1;
-p.trial.stimulus.iniSize=[500 200 1420 880];
+p.trial.stimulus.iniSize=[500 200 700 1000];
 
 %set state
 p.trial.state=p.trial.stimulus.states.START;

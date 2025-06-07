@@ -257,7 +257,7 @@ function p=trialSetup(p)
     end
     
     %compute nr frames
-    p.trial.stimulus.nrFrames=p.trialMem.durStim*p.trial.stimulus.frameRate;
+    p.trial.stimulus.nrFrames=p.trial.stimulus.durStim*p.trial.stimulus.frameRate;
     
     %save misc variables
     p.trial.stimulus.randpos = randpos;
@@ -345,7 +345,8 @@ function cleanUpandSave(p)
     
     %show stats
     pds.behavior.countTrial(p,p.trial.pldaps.goodtrial); %updates counters
-     
+    disp(num2str(vertcat(p.trialMem.stats.val,p.trialMem.stats.count.Ntrial,...
+        p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
 
 %% Helper functions
 %-------------------------------------------------------------------%
