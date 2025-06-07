@@ -206,11 +206,11 @@ function p=trialSetup(p)
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
     PixPerDeg = 1/DegPerPix;
     
-    %transform stimulus sizes into px
-    %p.trial.stimulus.width=p.conditions{p.trial.pldaps.iTrial}.width;
-    p.trial.stimulus.height=p.trial.stimulus.width;
-    p.trial.stimulus.pWidth=round(p.trial.stimulus.width*PixPerDeg);
-    p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
+    %stimulus sizes - simply set to screen size here
+    p.trial.stimulus.width=p.trial.display.dWidth;
+    p.trial.stimulus.height=p.trial.display.dHeight;
+    p.trial.stimulus.pWidth=p.trial.display.pWidth;
+    p.trial.stimulus.pHeight=p.trial.display.pHeight;
     
     
     %number of dots - density is in dots/deg^2, size in deg

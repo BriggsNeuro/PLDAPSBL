@@ -3,7 +3,6 @@ function s = lesion_dots_settings_P1_XXXX0
 
 %%%these parameters can get changed
 s.behavior.reward.amount = [0.15 0.35 0.35 0.35];
-s.stimulus.width=50; %deg
 s.display.viewdist = 75; %cm
 s.stimulus.duration.ITI = 0.2;
 

@@ -217,11 +217,11 @@ function p=trialSetup(p)
     
     
     %number of dots - density is in dots/deg^2, size in deg
-    p.trial.stimulus.nrDots=round(p.trialMem.dotDensity*p.trialMem.width*...
+    p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trialMem.width*...
         p.trial.stimulus.height);
     
     %dot size
-    p.trial.stimulus.dotSizePix = round(p.trialMem.dotSize*PixPerDeg);
+    p.trial.stimulus.dotSizePix = round(p.trial.stimulus.dotSize*PixPerDeg);
     
     %dot displacement per frame (speed is in deg/sec)
     p.trial.stimulus.deltaF=p.trial.stimulus.dotSpeed/p.trial.stimulus.frameRate*PixPerDeg;
