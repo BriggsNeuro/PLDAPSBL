@@ -375,10 +375,10 @@ function cleanUpandSave(p)
             disp(['Dot density decreased to ' num2str(p.trialMem.dotDensity)])
         case 3 %up
             p.trialMem.dotSize=p.trialMem.dotSize + (p.trial.stimulus.delta_size);
-            disp(['Dot Size increased to ' num2str(p.trialMem.dotSize)])
+            disp(['Dot size increased to ' num2str(p.trialMem.dotSize)])
         case 4 %down
             p.trialMem.dotSize=p.trialMem.dotSize - (p.trial.stimulus.delta_size);
-            disp(['Dot Size decreased to ' num2str(p.trialMem.dotSize)])
+            disp(['Dot size decreased to ' num2str(p.trialMem.dotSize)])
     end
 
 %% Helper functions

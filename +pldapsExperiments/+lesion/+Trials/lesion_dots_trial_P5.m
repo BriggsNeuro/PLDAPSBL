@@ -370,10 +370,10 @@ function cleanUpandSave(p)
         p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
 
     switch p.trial.userInput
-        case 1 %right key
+        case 1 %left key
             p.trialMem.offset=p.trialMem.offset + (p.trial.stimulus.delta_offset);
             disp(['Offset increased to ' num2str(p.trialMem.offset)])
-        case 2 %left key
+        case 2 %right key
             p.trialMem.offset=p.trialMem.offset - (p.trial.stimulus.delta_offset);
             disp(['Offset decreased to ' num2str(p.trialMem.offset)])
     end

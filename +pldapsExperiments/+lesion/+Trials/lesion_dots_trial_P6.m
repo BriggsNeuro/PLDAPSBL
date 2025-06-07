@@ -370,10 +370,10 @@ function cleanUpandSave(p)
         p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
 
     switch p.trial.userInput
-        case 1 %right key
+        case 1 %left key
             p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
             disp(['increased stim duration to ' num2str(p.trialMem.durStim)])
-        case 2 %left key
+        case 2 %right key
             p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
             disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
     end
