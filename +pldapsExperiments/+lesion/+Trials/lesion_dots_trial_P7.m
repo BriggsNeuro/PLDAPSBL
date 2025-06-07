@@ -228,6 +228,15 @@ function p=trialSetup(p)
         p.trialMem.stairR = p.trial.stimulus.stairR;
     end
 
+    %coherence values - only happens at start of script
+    if ~isfield(p.trialMem,'dotCohL')
+        p.trialMem.dotCohL = p.trial.stimulus.dotCohDefaultL;
+    end
+    if ~isfield(p.trialMem,'dotCohR')
+        p.trialMem.dotCohR = p.trial.stimulus.dotCohDefaultR;
+    end
+
+
     %execute staircase based on stimulus side
     if p.conditions{p.trial.pldaps.iTrial}.stimSide==-1 %left
         %staircase left

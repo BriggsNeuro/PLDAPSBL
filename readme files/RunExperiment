@@ -1,0 +1,9 @@
+To run an experiment, execute the following commands in Matlab,
+replacing * with experiment phase (0-7)
+and XXXX0 with string identifying the animal
+
+
+settingsStruct=pldapsExperiments.lesion.lesionSettings.lesion_dots_settings_P*_XXXX0
+p = pldaps(@pldapsExperiments.lesion.Setup.lesion_dots_setup_P*,'XXXX0',settingsStruct)
+p.run
+
