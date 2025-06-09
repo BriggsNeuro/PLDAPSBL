@@ -1,4 +1,4 @@
-function p = pdsDefaultTrialStructureNL(p)
+function p = pdsDefaultTrialStructureBL(p)
 % p = pdsDefaultTrialStructureNL(p)
 % defines some standard names
 
@@ -14,17 +14,17 @@ p = defaultBitNames(p);
 
 %-------------------------------------------------------------------------%
 % Stimulus side association
-p.defaultParameters.stimulus.side.LEFT = 2;
-p.defaultParameters.stimulus.side.RIGHT = 1;
-p.defaultParameters.stimulus.side.MIDDLE = 3;
+p.defaultParameters.stimulus.side.LEFT = 6;
+p.defaultParameters.stimulus.side.RIGHT = 0;
+%p.defaultParameters.stimulus.side.MIDDLE = 3;
 
 
 %-------------------------------------------------------------------------%
 % IR beam assignments (relative to port.status)
-p.defaultParameters.stimulus.port.START = 3;
-p.defaultParameters.stimulus.port.LEFT = 2;
+p.defaultParameters.stimulus.port.START = 2;
+p.defaultParameters.stimulus.port.LEFT = 4;
 p.defaultParameters.stimulus.port.RIGHT = 1;
-p.defaultParameters.stimulus.port.MIDDLE = 4;
+p.defaultParameters.stimulus.port.MIDDLE = 3;
 
 
 
@@ -33,7 +33,7 @@ p.defaultParameters.stimulus.port.MIDDLE = 4;
 p.defaultParameters.stimulus.rewardIdx.START = 1;
 p.defaultParameters.stimulus.rewardIdx.LEFT = 2;
 p.defaultParameters.stimulus.rewardIdx.RIGHT = 3;
-p.defaultParameters.stimulus.rewardIdx.MIDDLE = 4;
+%p.defaultParameters.stimulus.rewardIdx.MIDDLE = 4;
 
 
 %-------------------------------------------------------------------------%

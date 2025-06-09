@@ -1,7 +1,7 @@
 function s = lesion_dots_settings_P0
 
 %set reward amounts
-s.behavior.reward.amount = [0.15 0.35 0.35 0.35];
+%s.behavior.reward.amount = [0.1 0.1 0.1];;
 %turn saving off (this is just acclimatiztion)
 s.pldaps.nosave = 1;
 
