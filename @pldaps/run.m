@@ -14,7 +14,6 @@ function p = run(p)
 % make HideCursor optional
 % TODO:reset class at end of experiment or mark as recorded, so I don't
 % run the same again by mistake
-
 try
     %% Setup and File management
     % Enure we have an experimentSetupFile set and verify output file
@@ -36,7 +35,7 @@ try
     
     if ~p.defaultParameters.pldaps.nosave
         p.defaultParameters.session.dir = p.defaultParameters.pldaps.dirs.data;
-        p.defaultParameters.session.dirTmp = p.defaultParameters.pldaps.dirs.dataTmp;
+        p.defaultParameters.session.dirTemp = p.defaultParameters.pldaps.dirs.dataTmp;
         p.defaultParameters.session.filename = [p.defaultParameters.session.subject datestr(p.defaultParameters.session.initTime, 'yyyymmdd') p.defaultParameters.session.experimentSetupFile datestr(p.defaultParameters.session.initTime, 'HHMM')];
         p.defaultParameters.session.shortfilename = [p.defaultParameters.session.subject datestr(p.defaultParameters.session.initTime, 'yyyymmdd') datestr(p.defaultParameters.session.initTime, 'HHMM')];
         p.defaultParameters.session.file = [p.defaultParameters.session.filename '.PDS'];
@@ -62,6 +61,8 @@ try
     % add trialMem structure (holds numbers from trial to trial)
     p.trialMem=struct;
     
+   
+    
     % Setup PLDAPS experiment condition
     p.defaultParameters.pldaps.maxFrames=p.defaultParameters.pldaps.maxTrialLength*p.defaultParameters.display.frate;
     feval(p.defaultParameters.session.experimentSetupFile, p);
@@ -83,6 +84,8 @@ try
     %-------------------------------------------------------------------------%
     p = pds.ports.initPortStatus(p);
     p = pds.ports.makePortsPos(p);
+
+    
            
     % Git
     %-------------------------------------------------------------------------%
@@ -112,10 +115,9 @@ try
     % logging
     p = pds.datapixx.init(p);
 
-
     % Behavior camera
     %-------------------------------------------------------------------------%
-    %p = pds.behavcam.setupcam(p);
+    p = pds.behavcam.setupcam(p);
     
     
     % Two-photon
@@ -126,17 +128,15 @@ try
     %-------------------------------------------------------------------------%
     p = pds.intan.setupIntan(p);
     
-    % zaber
-    %pds.zaber.connectZaber(p);
-    
     % DAQ
     %-------------------------------------------------------------------------%
     p = pds.daq_com.initialize_daq(p);
     
+
     % Keyboard
     %-------------------------------------------------------------------------%
     pds.keyboard.setup(p);
-    
+     
     % States
     %-------------------------------------------------------------------------%
     % Initialize LED state
@@ -144,16 +144,44 @@ try
         p.trial.led.state = 0;
     end
     
-    % Initialize trial locking status
+    % Initialize trial locking/switch/bias status
     p.trialMem.lock = 0;
+    p.trialMem.switch = 0;
+    p.trialMem.bias = 0;
+    p.trialMem.blocknum = 0;
+    p.trialMem.exit = 0;
+    p.trialMem.endEyetracking = 0;
+    %%p.trial.screenoff = 0; KN 6/9/25
+    if isfield(p.defaultParameters.stimulus,'staircasepause')
+        p.trialMem.staircasepause = p.defaultParameters.stimulus.staircasepause;
+    else
+        p.trialMem.staircasepause = 0;
+    end
+    if isfield(p.defaultParameters.stimulus,'block')
+        p.trialMem.block =  p.defaultParameters.stimulus.block;
+    else
+        p.trialMem.block = 0;
+    end
+%     % initialize staircase, PAL_AMUD_updateUD in oritrial_free_contrast
+%     xMax = length(p.defaultParameters.stimulus.range_var_source);
+%     xMin = 1;
+%     startvalue = randi([p.defaultParameters.stimulus.select(1),p.defaultParameters.stimulus.select(end)],1,1);
+%     UD = PAL_AMUD_setupUD('stopcriterion','trials','stoprule', 1000);
+%     UD = PAL_AMUD_setupUD(UD,'startvalue',startvalue);
+%     UD = PAL_AMUD_setupUD(UD,'stepSizeUp',1,'stepSizeDown',1,'xMax',xMax,'xMin',xMin);
+%     p.trialMem.UD = UD;
     
     %% Last chance to check variables
     if(p.trial.pldaps.pause.type==1 && p.trial.pldaps.pause.preExperiment==true) %0=don't,1 is debugger, 2=pause loop
         p  %#ok<NOPRT>
         disp('Ready to begin trials. Type return to start first trial...')
+        try
         keyboard %#ok<MCKBD>
+        catch
+            'correct for the code'
+        end
     end
-    
+    %disp('out');
     %% start experiment
     %%%%start recoding on all controlled components this in not currently done here
     % save timing info from all controlled components (datapixx, eyelink, this pc)
@@ -161,7 +189,9 @@ try
     
     % disable keyboard
     ListenChar(2)
+    if ~p.defaultParameters.mouse.useAsPort
     HideCursor
+    end
     
     p.trial.flagNextTrial  = 0; % flag for ending the trial
     p.trial.iFrame     = 1;  % frame index
@@ -180,7 +210,6 @@ try
     
     %% main trial loop %%
     while p.trial.pldaps.iTrial < p.trial.pldaps.finish && p.trial.pldaps.quit~=2
-        
         if p.trial.pldaps.quit == 0
             
             %load parameters for next trial and lock defaultsParameters
@@ -221,8 +250,9 @@ try
                 %store the complete trial struct to .data
                 dTrialStruct = p.trial;
             else
-                %store the difference of the trial struct to .data
+                % store the difference of the trial struct to .data
                 dTrialStruct=getDifferenceFromStruct(p.defaultParameters,p.trial);
+                dTrialStruct.stimulus = p.trial.stimulus; % save all stimulus information, by SZ
             end
             p.data{trialNr}=dTrialStruct;
            
@@ -242,11 +272,15 @@ try
                 p.trial
                 disp('Ready to begin trials. Type "dbcont" to start first trial...')
                 pds.sbserver.shutter2P(p,'0'); %if collecting two photon data, blank the laser
+                try % added by Silei
                 keyboard %#ok<MCKBD>
+                catch
+                    'correct for the code'
+                end
                 p.trial.pldaps.quit = 0;
                 ListenChar(2);
                 HideCursor;
-            elseif pause==2 
+            elseif pause==2
                 pauseLoop(p);
             end
             %             pds.datapixx.refresh(dv);
@@ -292,16 +326,13 @@ try
     pds.LED.LEDOff(p);
     
     %close camera (if used)
-    %pds.behavcam.closecam(p);
+    pds.behavcam.closecam(p);
     
     %close laser (if used)
     pds.sbserver.close2P(p);
     
     %stop recording (if used)
     pds.intan.stopIntan(p);
-    
-    %stop zaber (if used)
-    %pds.zaber.stopZaber(p);
     
     if ~p.defaultParameters.pldaps.nosave
         [structs,structNames] = p.defaultParameters.getAllStructs();
@@ -347,8 +378,11 @@ catch me
         fprintf('errors in %s line %d\r', me.stack(iErr).name, me.stack(iErr).line)
     end
     fprintf('\r\r')
-    
-    clear keyboard
+    try
+    keyboard
+    catch
+        'correct for the code';
+    end
 end
 
 end
@@ -362,12 +396,15 @@ while(true)
     [dv.trial.keyboard.pressedQ,  dv.trial.keyboard.firstPressQ]=KbQueueCheck(); % fast
     if dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.Lctrl)&&dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.Lalt)
         %D: Debugger
-        if  dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.dKey)
+        if  dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.gKey)
             disp('stepped into debugger. Type return to start first trial...')
+            try % added by SZ
             keyboard %#ok<MCKBD>
-            
+            catch
+                'correct for the code'
+            end
             %E: Eyetracker Setup
-        elseif  dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.eKey)
+        elseif  dv.trial.keyboard.firstPressQ(dv.trial.keyboard.codes.tKey)
             try
                 if(dv.trial.eyelink.use)
                     pds.eyelink.calibrate(dv);
@@ -408,8 +445,6 @@ while(true)
                     end
                 end
             end
-            
-            
         end %IF CTRL+ALT PRESSED
     end
     pause(0.1);

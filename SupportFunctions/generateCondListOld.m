@@ -1,4 +1,4 @@
-function c=generateCondList(cond,side,randType,nrBlocks,varargin)
+function c=generateCondList(cond,side,randType,nrBlocks, varargin)
 
 %input:
 %cond: structure with basic conditions (1 field per condition)
@@ -14,20 +14,11 @@ function c=generateCondList(cond,side,randType,nrBlocks,varargin)
 %output:
 %structure with conditions and side assignment for every trial
 
-rng('shuffle') % shuffle
-if nargin>=5
+%nrReps in condition added 7/19/24 EO
+
+if nargin==5
     nrReps=varargin{1};
 end
-
-if nargin == 6
-    jitter=varargin{2};
-end
-
-if nargin == 7
-    practice=varargin{3};
-end
-    
-%%% to do: add more inputs, e.g. jitter between 1-5
 
 
 %generate full combinatorial tree
@@ -51,20 +42,7 @@ combCond=eval(['CombVec(' str ')']);
 
 %generate repeat structure
 condIdx=[];
-% repeat combCond for trials with only 1 or 2 levels to prevent too frequent switches
-if size(combCond,2) == 2 
-    combCond=[combCond combCond combCond combCond]; % essentially pseudo8
-elseif size(combCond,2) == 4
-    combCond=[combCond combCond]; % essentially pseudo8
-end
-
 if strcmp(randType,'pseudo')
-    
-    for i=1:nrBlocks
-        condIdx=[condIdx randperm(size(combCond,2))];
-    end
-elseif strcmp(randType,'pseudo6') % only use when size(combCond,2) == 2, because need to prevent switch bias
-    combCond=[combCond combCond combCond]; 
     for i=1:nrBlocks
         condIdx=[condIdx randperm(size(combCond,2))];
     end
@@ -81,18 +59,10 @@ elseif strcmp(randType,'block')
         ridx=idx(randperm(length(idx)));
         %now repeat (within block repeats; necessary if there are only 2
         %conditions)
-        if jitter >= 1
-            randvalue = randi([-jitter jitter]);
-            nrReps_rand = nrReps  + randvalue(1); % nrReps_rand added by SZ
-        else
-            nrReps_rand = nrReps;
-        end
-        ridx=repmat(ridx,nrReps_rand,1);  %%% to do: add a random jitter here
-        ridx=reshape(ridx,1,length(idx)*nrReps_rand);   %%% to do: setting the length of block
+        ridx=repmat(ridx,nrReps,1);
+        ridx=reshape(ridx,1,length(idx)*nrReps);
         condIdx=[condIdx ridx];
     end
-elseif strcmp(randType,'rand')
-    condIdx=randi([1 size(combCond,2)], nrBlocks, 1);
 end
 
 %generate output

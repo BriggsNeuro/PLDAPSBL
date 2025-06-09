@@ -43,7 +43,6 @@ function p = runTrial(p)
     p.trial.pldaps.trialStates.frameFlip=8;
     
     p.trial.currentFrameState=1;    
-    
     tfh(p, p.trial.pldaps.trialStates.trialSetup);
     
 %     timeNeeded(p.trial.pldaps.trialStates.frameUpdate)=0.5;

@@ -69,20 +69,14 @@ if p.trial.mouse.use
         p.trial.ports.status = pds.ports.mouseInPort(p);
     end
 end
-
-
 %get analogData from Datapixx
 pds.datapixx.adc.getData(p);
-
 %get digitalData from Datapixx
 pds.datapixx.din.getData(p);
-
 %get eyelink data
 pds.eyelink.getQueue(p);
 %get plexon spikes
 %         pds.plexon.spikeserver.getSpikes(p);
-
-
 end %frameUpdate
 
 
@@ -483,11 +477,262 @@ end
 %reward system
 pds.behavior.reward.cleanUpandSave(p);
 
-%lock trial if selected
-if p.trialMem.lock==1
-    disp('Trial locked!')
-    thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
-    p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) thisCondition p.conditions(p.trial.pldaps.iTrial+1:end)];    
+% ----- Practice trials
+if isfield(p.trialMem,'practice')  && p.trialMem.block==0
+    if p.trial.pldaps.iTrial <= p.trialMem.practice
+       disp('Practice trial')
+%        p.conditions{p.trial.pldaps.iTrial}.select = 12;
+%        p.conditions{p.trial.pldaps.iTrial}.range_var = (p.conditions{p.trial.pldaps.iTrial}.range_mean + p.conditions{p.trial.pldaps.iTrial}.range_meanadd);
+%        p.conditions{p.trial.pldaps.iTrial}.rangeC = p.conditions{p.trial.pldaps.iTrial}.range_var .* 2;
+%        p.conditions{p.trial.pldaps.iTrial}.rangeI = 0;
+        if isfield(p.trialMem,'highestlevel') && p.trialMem.highestlevel < length(p.trial.stimulus.range_var_source)
+            p.conditions{p.trial.pldaps.iTrial+1}.select = p.trialMem.highestlevel + 1; %12
+        elseif isfield(p.trialMem,'highestlevel') && p.trialMem.highestlevel >= length(p.trial.stimulus.range_var_source)
+            p.conditions{p.trial.pldaps.iTrial+1}.select = length(p.trial.stimulus.range_var_source);
+        else
+            p.conditions{p.trial.pldaps.iTrial+1}.select = 12;
+        end
+        p.conditions{p.trial.pldaps.iTrial}.tf = 0;
+        p.conditions{p.trial.pldaps.iTrial+1}.tf = 0;
+      %p.conditions{p.trial.pldaps.iTrial}.radius = p.conditions{p.trial.pldaps.iTrial}.radius + 0.1;
+      p.conditions{p.trial.pldaps.iTrial+1}.radius = p.conditions{p.trial.pldaps.iTrial+1}.radius + 0.1;
+      switch p.trial.stimulus.step  % add 0.01 so that it can be distinguished with trials that are really counted % p.trial.pldaps.iTrial == p.trialMem.practice + 1
+            case {0,'var','radius','contrast'}
+                if length(p.trial.stimulus.duration.pretime) == 1 % added since 12/6/2022
+                    p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0.05;
+                    p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0.05;
+                else % added since 12/6/2022
+                    p.conditions{p.trial.pldaps.iTrial}.pretime = p.trial.stimulus.duration.pretime(end);
+                    p.conditions{p.trial.pldaps.iTrial+1}.pretime = p.trial.stimulus.duration.pretime(end);
+                end
+            %       end
+            case 'pretime'
+                 % added since 12/6/2022
+                p.conditions{p.trial.pldaps.iTrial}.pretime = p.trial.stimulus.duration.pretime(end);
+                p.conditions{p.trial.pldaps.iTrial+1}.pretime = p.trial.stimulus.duration.pretime(end);
+      end
+      % if practice trial mistake, increase practice trial num, + lock/switch
+        if p.trial.pldaps.iTrial <= p.trialMem.practice && ~p.trial.pldaps.goodtrial 
+          p.trialMem.practice = p.trialMem.practice + 1;
+          if p.trial.pldaps.iTrial <= 10
+              p.trialMem.lock = 1;
+          end
+        end
+        if p.trial.pldaps.iTrial >= p.trialMem.practice/2
+%             p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0;
+%             p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0;
+%             p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0.01;
+%             p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0.01;
+        end
+        if p.trial.pldaps.iTrial == p.trialMem.practice
+            p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0;
+            p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0;
+            p.conditions{p.trial.pldaps.iTrial}.radius = p.conditions{1}.radius;
+            p.conditions{p.trial.pldaps.iTrial+1}.radius = p.conditions{1}.radius;
+        end
+      % if performance both side no better than 75%, continue practice trials until trial 20
+%         if p.trial.pldaps.iTrial >= 10 && p.trial.pldaps.iTrial == p.trialMem.practice
+%             totalcorrectrate10 = sum(p.trialMem.stats.count.accumC(end-9:end,:),'all')./(sum(p.trialMem.stats.count.accumC(end-9:end,:),'all')+ sum(p.trialMem.stats.count.accumI(end-9:end,:),'all'));
+%             leftcorrectrate10 = sum(p.trialMem.stats.count.accumC(end-9:end,1:2:end),'all')./(sum(p.trialMem.stats.count.accumC(end-9:end,1:2:end),'all')+ sum(p.trialMem.stats.count.accumI(end-9:end,1:2:end),'all'));
+%             rightcorrectrate10 = sum(p.trialMem.stats.count.accumC(end-9:end,2:2:end),'all')./(sum(p.trialMem.stats.count.accumC(end-9:end,2:2:end),'all')+ sum(p.trialMem.stats.count.accumI(end-9:end,2:2:end),'all'));
+%             if leftcorrectrate10 < 0.75 || rightcorrectrate10 < 0.75 || totalcorrectrate10 < 0.8 
+%                 p.trialMem.practice = p.trialMem.practice + 1;
+%                 disp('Practice extended')
+%                 disp(['Practice extended. ' 'total10: ' num2str(totalcorrectrate10) '; left10: ' num2str(leftcorrectrate10) ',' num2str(sum(p.trialMem.stats.count.accumC(end-9:end,1:2:end),'all')+ sum(p.trialMem.stats.count.accumI(end-9:end,1:2:end),'all')) ' ;' '  Right10: ' num2str(rightcorrectrate10) ',' num2str(sum(p.trialMem.stats.count.accumC(end-9:end,2:2:end),'all')+ sum(p.trialMem.stats.count.accumI(end-9:end,2:2:end),'all')) ' ;'])
+%             end
+%         end
+%     elseif p.trialMem.practice>=1 
+%         switch p.trial.stimulus.step 
+%             case {0,'contrast'}
+%                 p.conditions{p.trial.pldaps.iTrial}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%                 p.conditions{p.trial.pldaps.iTrial+1}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%             case 'var'
+%                 if ~any(round((p.trialMem.stats.val(3,:) - p.trialMem.stats.val(4,:))./2,2) == round(p.trial.stimulus.range_var_source(9),2))
+%            %         p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0.01;
+%            %         p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0.01;
+%                     p.conditions{p.trial.pldaps.iTrial}.radius = p.conditions{p.trial.pldaps.iTrial}.radius + 0.1;
+%                     p.conditions{p.trial.pldaps.iTrial+1}.radius = p.conditions{p.trial.pldaps.iTrial+1}.radius + 0.1;
+%                 elseif any(round((p.trialMem.stats.val(3,:) - p.trialMem.stats.val(4,:))./2,2) == round(p.trial.stimulus.range_var_source(9),2)) && mod(p.conditions{p.trial.pldaps.iTrial}.radius,1)~=0 && p.trialMem.practice>=1  % && p.conditions{p.trial.pldaps.iTrial-1}.pretimeadd == 0.01
+%                %         p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0; 
+%                %         p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0;
+%                         p.conditions{p.trial.pldaps.iTrial}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%                         p.conditions{p.trial.pldaps.iTrial+1}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%                 end
+%             case 'pretime'
+%                 if ~any(round(p.trialMem.stats.val(5,:),2) == round(p.trial.stimulus.duration.pretime_var_source(9),2))
+%             % add 0.01 so that it can be distinguished with trials that are really counted % p.trial.pldaps.iTrial == p.trialMem.practice + 1
+%            %         p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0.01;
+%            %         p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0.01;
+%                     p.conditions{p.trial.pldaps.iTrial}.radius = p.conditions{p.trial.pldaps.iTrial}.radius + 0.1;
+%                     p.conditions{p.trial.pldaps.iTrial+1}.radius = p.conditions{p.trial.pldaps.iTrial+1}.radius + 0.1;
+%                elseif any(round(p.trialMem.stats.val(5,:),2) == round(p.trial.stimulus.duration.pretime_var_source(9),2)) && mod(p.conditions{p.trial.pldaps.iTrial}.radius,1)~=0 && p.trialMem.practice>=1  % && p.conditions{p.trial.pldaps.iTrial-1}.pretimeadd == 0.01
+%            %         p.conditions{p.trial.pldaps.iTrial}.pretimeadd = 0; 
+%            %         p.conditions{p.trial.pldaps.iTrial+1}.pretimeadd = 0;
+%                     p.conditions{p.trial.pldaps.iTrial}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%                     p.conditions{p.trial.pldaps.iTrial+1}.radius = floor(p.conditions{p.trial.pldaps.iTrial}.radius);
+%                 end
+%         end
+    end
+else
+    p.trialMem.practice = 0;
+end
+
+% add some difficult levels
+if all(isfield(p.trial.stimulus,{'difficultLevels','difficultLevelsProbability'})) && (~isfield(p.trialMem,'practice') || p.trial.pldaps.iTrial > p.trialMem.practice + 1)
+    prob=rand;
+    if prob <= p.trial.stimulus.difficultLevelsProbability % at a probability of p.trial.stimulus.difficultLevelsProbability
+      p.conditions{p.trial.pldaps.iTrial+1}.select = p.trial.stimulus.difficultLevels(randi([1 length(p.trial.stimulus.difficultLevels)])); % randomly select one level from difficultLevels
+      if isfield(p.trial.stimulus,'difficultLevelsPretime')
+        p.conditions{p.trial.pldaps.iTrial+1}.pretime = p.trial.stimulus.difficultLevelsPretime;
+      end
+      if isfield(p.trial.stimulus,'difficultLevelsRadius')
+        p.conditions{p.trial.pldaps.iTrial+1}.radius = p.trial.stimulus.difficultLevelsRadius;
+      end
+    end
 end 
 
+% bias left/right probability
+if isfield(p.trialMem,'bias') && (~isfield(p.trialMem,'practice') || p.trial.pldaps.iTrial > p.trialMem.practice + 1)
+    if p.trialMem.bias~=0
+        disp(['***Trial bias status: ' 'L:' num2str(0.5 - p.trialMem.bias./2) ' R:' num2str(0.5 + p.trialMem.bias./2)]);
+    % bias the probability of two sides
+        if p.trialMem.bias > 0 % you want the side to be biased to the right
+            if p.conditions{p.trial.pldaps.iTrial+1}.side == 2 % if the next side is left
+                prob=rand;
+                if prob < abs(p.trialMem.bias) % at a probability of p.trialMem.bias
+                  p.conditions{p.trial.pldaps.iTrial+1}.side = 1;
+                  p.conditions{p.trial.pldaps.iTrial+1}.(p.trialMem.side.par) = p.trialMem.side.match(1); % change the next side to right with a probability of 0.5 + p.trialMem.bias
+                end
+            end
+        elseif p.trialMem.bias < 0 % you want the side to be biased to the right
+            if p.conditions{p.trial.pldaps.iTrial+1}.side == 1
+                prob=rand;
+                if prob < abs(p.trialMem.bias) % at a probability of p.trialMem.bias
+                  p.conditions{p.trial.pldaps.iTrial+1}.side = 2;
+                  p.conditions{p.trial.pldaps.iTrial+1}.(p.trialMem.side.par) = p.trialMem.side.match(2);
+                end
+            end
+        end
+    end
+end 
+
+%prevent one position for four times
+if p.trialMem.lock==0 && p.trialMem.block==0 && p.trial.pldaps.iTrial>=4 && isfield(p.trial.stimulus,'preventMaintain4Times') && p.trial.stimulus.preventMaintain4Times == 1 %&& ~strcmp(p.trial.stimulus.runtype, 'block')
+    if p.conditions{p.trial.pldaps.iTrial+1}.side == p.conditions{p.trial.pldaps.iTrial}.side ...
+        && p.conditions{p.trial.pldaps.iTrial}.side == p.conditions{p.trial.pldaps.iTrial-1}.side ...
+         && p.conditions{p.trial.pldaps.iTrial-1}.side == p.conditions{p.trial.pldaps.iTrial-2}.side ...
+          && p.conditions{p.trial.pldaps.iTrial-2}.side == p.conditions{p.trial.pldaps.iTrial-3}.side
+      p.trialMem.switch = 1;
+    end
+end 
+
+% %prevent switches for five times
+% if p.trialMem.switch==0 && p.trial.pldaps.iTrial>=4 && p.trial.pldaps.iTrial > p.trialMem.practice + 1
+%     if p.conditions{p.trial.pldaps.iTrial+1}.side ~= p.conditions{p.trial.pldaps.iTrial}.side ...
+%         && p.conditions{p.trial.pldaps.iTrial}.side ~= p.conditions{p.trial.pldaps.iTrial-1}.side ...
+%          && p.conditions{p.trial.pldaps.iTrial-1}.side ~= p.conditions{p.trial.pldaps.iTrial-2}.side ...
+%           && p.conditions{p.trial.pldaps.iTrial-2}.side ~= p.conditions{p.trial.pldaps.iTrial-3}.side
+%       disp('side maintained!')
+%       thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+%       p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) thisCondition p.conditions(p.trial.pldaps.iTrial+1:end)];  
+%     end
+% end 
+%prevent switches for three times
+if p.trialMem.switch==0 && p.trialMem.block==0 && p.trial.pldaps.iTrial>=3 && isfield(p.trial.stimulus,'preventSwitch3Times') && p.trial.stimulus.preventSwitch3Times == 1% && p.trial.pldaps.iTrial > p.trialMem.practice + 1
+    if p.conditions{p.trial.pldaps.iTrial+1}.side ~= p.conditions{p.trial.pldaps.iTrial}.side ...
+        && p.conditions{p.trial.pldaps.iTrial}.side ~= p.conditions{p.trial.pldaps.iTrial-1}.side ...
+         && p.conditions{p.trial.pldaps.iTrial-1}.side ~= p.conditions{p.trial.pldaps.iTrial-2}.side
+      disp('side maintained!')
+      thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+      p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) thisCondition p.conditions(p.trial.pldaps.iTrial+1:end)];  
+    end
+end 
+%if side maintained or locked happens after adjusting difference level, the
+%adjustment will not work because the varadd will be overriden later by "p.conditions{p.trial.pldaps.iTrial+1}.range_varadd = p.conditions{p.trial.pldaps.iTrial}.range_varadd;" 
+
+
+%block trial if selected
+if p.trialMem.block==1 && p.trialMem.lock~=1 && p.trialMem.switch~=1
+    disp('Trial blocked!')
+    p.trialMem.blocknum = p.trialMem.blocknum + 1;
+    
+%     if ~p.trial.pldaps.goodtrial 
+%       p.trialMem.blocknum = p.trialMem.blocknum - 1;
+%       p.trialMem.lock = 1;
+%     end
+    
+    if p.trialMem.blocknum == 1
+        if isfield(p.trialMem, 'nrReps_new') % only update nrReps at the beginning of the block
+            if p.trialMem.nrReps_new ~= p.trialMem.nrReps
+                p.trialMem.nrReps = p.trialMem.nrReps_new;
+            end
+        end
+        thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+        if p.trialMem.jitter >=1 % add jitter to the block
+            randvalue = randi([-p.trialMem.jitter p.trialMem.jitter]);
+            p.trialMem.nrReps_save = p.trialMem.nrReps;
+            p.trialMem.nrReps = p.trialMem.nrReps  + randvalue(1);
+            p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) repmat({thisCondition},1,p.trialMem.nrReps) p.conditions(p.trial.pldaps.iTrial+1:end)]; 
+            p.trialMem.nrReps = p.trialMem.nrReps_save;
+        else
+            p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) repmat({thisCondition},1,p.trialMem.nrReps) p.conditions(p.trial.pldaps.iTrial+1:end)]; 
+        end
+        
+    elseif p.trialMem.blocknum == p.trialMem.nrReps
+        thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+        p.trialMem.nrReps = p.trialMem.nrReps_save; % added for jitter
+        if thisCondition.side ==1
+            thisCondition.side = 2;
+            thisCondition.(p.trialMem.side.par) = p.trialMem.side.match(2);
+        else
+            thisCondition.side = 1;
+            thisCondition.(p.trialMem.side.par) = p.trialMem.side.match(1);
+        end
+        if p.trialMem.jitter >=1 % add jitter to the block
+            randvalue = randi([-p.trialMem.jitter p.trialMem.jitter]);
+            nrReps_save = p.trialMem.nrReps;
+            p.trialMem.nrReps = p.trialMem.nrReps  + randvalue(1);
+            p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) repmat({thisCondition},1,p.trialMem.nrReps) p.conditions(p.trial.pldaps.iTrial+1:end)]; 
+            p.trialMem.nrReps = nrReps_save;
+        else
+            p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) repmat({thisCondition},1,p.trialMem.nrReps) p.conditions(p.trial.pldaps.iTrial+1:end)];
+        end
+        p.trialMem.blocknum = 0;
+    end
+end 
+
+if p.trialMem.exit==1 && p.trial.pldaps.quit == 0
+    disp('Exit!')
+    p.trial.pldaps.exit = 1;
+end 
+
+%lock trial if selected
+if p.trialMem.lock==1 % && p.trialMem.block==0
+    disp('Trial locked!')
+    thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+    p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) thisCondition p.conditions(p.trial.pldaps.iTrial+1:end)];  
+    if isfield(p.trialMem,'practice')
+     if p.trial.pldaps.iTrial <= p.trialMem.practice
+         p.trialMem.lock = 0;
+     end
+    end
+%     if p.trialMem.block ~= 0
+%         p.trialMem.lock = 0;
+%     end
+end 
+
+% swtich side if selected
+if p.trialMem.switch==1 % && p.trialMem.block==0
+    disp('Trial switched!')
+    thisCondition=p.conditions{p.trial.pldaps.iTrial}; 
+    if thisCondition.side ==1
+        thisCondition.side = 2;
+        thisCondition.(p.trialMem.side.par) = p.trialMem.side.match(2);
+    else
+        thisCondition.side = 1;
+        thisCondition.(p.trialMem.side.par) = p.trialMem.side.match(1);
+    end
+    p.conditions=[p.conditions(1:p.trial.pldaps.iTrial) thisCondition p.conditions(p.trial.pldaps.iTrial+1:end)];    
+    p.trialMem.switch = 0;
+end 
 end %cleanUpandSave

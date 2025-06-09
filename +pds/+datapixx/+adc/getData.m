@@ -17,6 +17,7 @@ end
 Datapixx('RegWrRd');
 adcStatus = Datapixx('GetAdcStatus');
 
+
 [bufferData, bufferTimetags, underflow, overflow] = Datapixx('ReadAdcBuffer', adcStatus.newBufferFrames,-1);
 if underflow
     warning('pds:datapixxadcgetData','underflow: getData is called to often');
@@ -24,7 +25,6 @@ end
 if overflow
     warning('pds:datapixxadcgetData','overflow: getData was not called often enough. Some data is lost.');
 end
-
 %transform data:
 bufferData=diag(p.trial.datapixx.adc.channelGains)*(bufferData+diag(p.trial.datapixx.adc.channelOffsets)*ones(size(bufferData)));
 

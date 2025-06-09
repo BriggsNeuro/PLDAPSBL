@@ -7,23 +7,28 @@ function s=pldapsClassDefaultParameters(s)
 %s.	behavior.
 %s.	behavior.	reward.
  s.	behavior.	reward.	defaultAmount = 0.3;
- s. behavior.   reward. manualAmount = 0.2;
- s. behavior.   reward. amount = [0.1 0.3 0.3 0.3];
- s. behavior.   reward. amountDelta = 0.05;
- s. behavior.   reward. propAmtIncorrect = 0.2;
+ s. behavior.   reward. manualAmount = 0.3;
+ s. behavior.   reward. amount = [0.1 0.1 0.1]; % SZ, original: [0.1 0.3 0.3 0.3]
+ s. behavior.   reward. amountDelta = 0.025;
+ s. behavior.   reward. propAmtIncorrect = 0.5;    % orginal: 0.2
  s. behavior.   reward. dacAmp = 10;
  s. behavior.   reward. nChannels = 3;
+ % changed by SZ, cannot be 0
  s. behavior.   reward. channel. START = 3; %dac channel for reward delivery
- s. behavior.   reward. channel. LEFT = 2;
- s. behavior.   reward. channel. RIGHT = 1;
- s. behavior.   reward. channel. MIDDLE = 0;
+ s. behavior.   reward. channel. LEFT = 1;
+ s. behavior.   reward. channel. RIGHT = 5;
+ % s. behavior.   reward. channel. MIDDLE = 0;
+ 
+%s. behavior.   optogenetics
+ s. behavior.   optogenetics. channel = 7;
+ s. behavior.   outputtimestamp. channel = 9;
 
 %s. camera
  s. camera.     use = 0;
  s. camera.     cameraIP='172.30.11.123';
  s. camera.     udpRemotePort = 8000;
  s. camera.     udpLocalPort = 9000;
- s. camera.     trigger. channel = 6;
+ s. camera.     trigger. channel = 4;
  
  %s.daq
  s. daq.        use = 0;
@@ -44,13 +49,13 @@ function s=pldapsClassDefaultParameters(s)
  s. datapixx.   useForStrobe = false;
 
 %s.	datapixx.	adc.
- s. datapixx.   adc.    useForReward = true;
+ s. datapixx.   adc.    useForReward = false; % true for adc IR
  s.	datapixx.	adc.	bufferAddress = [ ];
  s.	datapixx.	adc.	channelGains = 1;
  s.	datapixx.	adc.	channelMapping = 'datapixx.adc.ports'; %alternatively: cell array
  s.	datapixx.	adc.	channelModes = 0;
  s.	datapixx.	adc.	channelOffsets = 0;
- s.	datapixx.	adc.	channels = [2 4 6 8];
+ s.	datapixx.	adc.	channels = []; %[2 4 6 8];
  s.	datapixx.	adc.	maxSamples = 0;
  s.	datapixx.	adc.	numBufferFrames = 600000;
  s.	datapixx.	adc.	srate =1000;
@@ -65,13 +70,13 @@ function s=pldapsClassDefaultParameters(s)
 %%% No channel mapping here,
 %%% Moved to datapixx.din.start
 %%% Based on useFor fields
-s.  datapixx.   din.    useFor.     ports = false;
+s.  datapixx.   din.    useFor.     ports = true; % false for adc IR
 s.  datapixx.   din.    useFor.     daq  = false;
-s.  datapixx.   din.    channels.   ports = [2 4 6];
+s.  datapixx.   din.    channels.   ports = [0 2 4 6]; %change to your own channel % SZ
 s.  datapixx.   din.    channels.   daq = [];
 
 %s.datapixx.    dio
-s.  datapixx.   dio.    useForReward = 0; 
+s.  datapixx.   dio.    useForReward = 1; % 0 for adc IR
 
 
 %s.	datapixx.	GetPreciseTime.
@@ -85,17 +90,17 @@ s.  datapixx.   dio.    useForReward = 0;
  s.	display.	destinationFactorNew = 'GL_ONE_MINUS_SRC_ALPHA';
  s.	display.	displayName = 'defaultScreenParameters';
  s.	display.	forceLinearGamma = false;
- s.	display.	heightcm = 29;
+ s.	display.	heightcm = 29;% old monitor 1: 27.5, but 29 until 12/19/2022 ; old monitor 2: 24; 
  s.	display.	normalizeColor = 1;
- s.	display.	screenSize = [0 0 1920 1080];
- s.	display.	scrnNum = 1;
+ s.	display.	screenSize = [0 0 1920 1080]; %old monitors: [0 0 1024 768] 
+ s.	display.	scrnNum = 1;%SZ original: 1
  s.	display.	sourceFactorNew = 'GL_SRC_ALPHA';
  s.	display.	stereoFlip = [ ];
  s.	display.	stereoMode = 0;
  s. display.	switchOverlayCLUTs = false;
  s.	display.	useOverlay = 1;
  s.	display.	viewdist = 75;
- s.	display.	widthcm = 52;
+ s.	display.	widthcm =  52; % old monitor 1: 35.5, but 52 until 11/5/2022; old monitor 2: 32.5;
  s. display.    enableBacklight = true;
  s. display.    gamma.power = 1/2.3;
 
@@ -139,7 +144,6 @@ s.  datapixx.   dio.    useForReward = 0;
 %s. led.
  s. led.    channel = 24;
  s. led.    use = 1;
- s. led.    channel2 = 22; %5/30/25 - EO added to use second stimuli for stim off (camera)
  
 %s.	mouse.
  s.	mouse.	use = false;
@@ -169,14 +173,17 @@ s.  datapixx.   dio.    useForReward = 0;
  s.	pldaps.	quit = 0;
  s.	pldaps.	save.	initialParametersMerged = 1;
  s.	pldaps.	save.	mergedData = 0;
- s.	pldaps.	save.	v73 = 1;
+ s.	pldaps.	save.	v73 = 0;
  s.	pldaps.	trialMasterFunction = 'runTrial';
  s.	pldaps.	useFileGUI = false;
 
 %s.	pldaps.	dirs.
- s.	pldaps.	dirs.	data = '~/pldapsData';
-s.	pldaps.	dirs.	dataTmp = '~/pldapsTemp'; 
- s.	pldaps.	dirs.	wavfiles = '~/PLDAPSBL/beepsounds';
+ %old folders for windows machine
+ %s.	pldaps.	dirs.	data = 'Y:\Data\Awake\Ferret_behavioral_box'; % datafolder; % FB updated based on initialization code - 9/26/24
+ %s.	pldaps.	dirs.	wavfiles = 'Y:\Data\Awake\Ferret_behavioral_box'; %'C:\Users\BriggsLabNaturalSc\Documents\ferret behavior\PLDAPSNL-master\beepsounds'; %SZ
+ s.     pldaps. dirs. data = '~/pldapsData';
+ s.     pldaps. dirs. dataTmp = '~/pldapsTemp';
+ s.     pldaps. dirs. wavfiles = '~/PLDAPSBL/beepsounds'; 
 
 %s.	pldaps.	draw.
 %s.	pldaps.	draw.	cursor.
@@ -233,17 +240,17 @@ s.	pldaps.	dirs.	dataTmp = '~/pldapsTemp';
 %s. ports.
  s. ports.   use = true;
  s. ports.   nPorts = 4;
- s. ports.   movable = true;
+ s. ports.   movable = false; % SZ
  s. ports.   adc.  portMapping = 'datapixx.adc.ports'; %adc channels for port contact
  s. ports.   adc.  portThreshold = 2;
  s. ports.   adc.  portAvg = 0;
  s. ports.   din.  channelMapping = 'datapixx.din.ports'; %din channels for port contact
- s. ports.   dio.  channel. LEFT = 5;%2; %dio channels to move ports
+ s. ports.   dio.  channel. LEFT = 2; %dio channels to move ports
  s. ports.   dio.  channel. MIDDLE = 3;
  s. ports.   dio.  channel. RIGHT = 1;
  
 %s.	session.
- s.	session. experimentFile = [ ];
+ s.	session.	experimentFile = [ ];
 
 %s.	sound.
  s.	sound.	deviceid = [ ];
@@ -253,14 +260,7 @@ s.	pldaps.	dirs.	dataTmp = '~/pldapsTemp';
 
  
  %s.twoP 
- s. twoP.   use = 0;
- s. twoP.   IP = '172.30.11.132';
- s. twoP.   udpRemortPort = 7000;
- 
- %s. zaber
- s. zaber.  use = 0;
- s. zaber.  port = '/dev/ttyUSB0';
- %s. zaber.  connection = [];
- %s. zaber.  device = [];
- %s. zaber.  axis = [];
+ s. twoP.       use = 0;
+ s. twoP.       IP = '172.30.11.132';
+ s. twoP.       udpRemortPort = 7000;
 end

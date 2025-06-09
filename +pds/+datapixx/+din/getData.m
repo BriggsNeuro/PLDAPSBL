@@ -58,7 +58,7 @@ else
            p = subsasgn(p,iSub,channelStatus);
        else
            iSub(end).subs{2} = p.trial.datapixx.din.dataSampleCount;
-           p = subsasgn(p,iSub,[1 1 1]);
+           p = subsasgn(p,iSub,[1 1 1 1]); %changed from [1 1 1], KN 6/9/25
        end
     end
          

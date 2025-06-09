@@ -27,6 +27,7 @@ kb.eitKey = KbName('8*');
 kb.ninKey = KbName('9(');
 kb.zerKey = KbName('0)');
 kb.minKey = KbName('-_');
+%kb.pluKey = KbName('=+');
 kb.qKey = KbName('q');
 kb.wKey = KbName('w');
 kb.eKey = KbName('e');
@@ -61,7 +62,10 @@ kb.Uarrow = KbName('UpArrow');
 kb.Darrow = KbName('DownArrow');
 kb.Lctrl = KbName('LeftControl');
 kb.Lalt = KbName('LeftAlt');
+%kb.Rctrl = KbName('RightControl'); % added by SZ
+%kb.Ralt = KbName('RightAlt'); % added by SZ
 kb.return = KbName('return');
+%kb.semicolon  = KbName(';');
 %Numeric keypad
 kb.KPoneKey = KbName('1');
 kb.KPtwoKey = KbName('2');
