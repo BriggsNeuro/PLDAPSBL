@@ -63,7 +63,7 @@ switch p.trial.state
                   
     case p.trial.stimulus.states.CORRECT %correct port selected for stimulus
         %wait for ITI
-        if p.trial.ttime > p.trial.stimulus.timeTrialFirstResp + p.trial.stimulus.duration.ITI
+        if p.trial.ttime > p.trial.stimulus.timeTrialFinalResp + p.trial.stimulus.duration.ITI
             
             %advance state, mark as correct trial and flag next trial
             p.trial.state=p.trial.stimulus.states.TRIALCOMPLETE;
