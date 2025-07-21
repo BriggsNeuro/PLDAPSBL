@@ -5,7 +5,7 @@ function s = lesion_dots_settings_P6_XXXX0
 s.behavior.reward.amount = [0.15 0.35 0.35 0.35];
 s.stimulus.durStim = 2; %start stimulus duration (sec)
 s.stimulus.delta_durStim = 0.1; %step size stimulus duration (sec)
-s.display.viewdist = 75; %cm
+s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
 

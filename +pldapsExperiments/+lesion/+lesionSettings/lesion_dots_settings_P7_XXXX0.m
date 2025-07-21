@@ -12,7 +12,7 @@ s.stimulus.delta_cohL =  0.2; %coherence staircase step L
 s.stimulus.stairR=0; %staircase state R 
 s.stimulus.dotCoherenceR =  1; %start level R
 s.stimulus.delta_cohR =  0.2; %coherence staircase step R
-s.display.viewdist = 75; %cm
+s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
 

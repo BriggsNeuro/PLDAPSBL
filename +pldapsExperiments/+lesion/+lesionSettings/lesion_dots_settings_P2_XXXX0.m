@@ -2,8 +2,8 @@ function s = lesion_dots_settings_P2_XXXX0
 %this phase implements the tunnel/more limited viewing time
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.15 0.35 0.35 0.35];
-s.display.viewdist = 75; %cm
+s.behavior.reward.amount = [0.1 0.25 0.25];
+s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
 
