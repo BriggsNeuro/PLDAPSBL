@@ -1,0 +1,44 @@
+[4.1] > VIEWPixx #1    ID = 0x5650 [VP]
+[4.1] > VIEWPixx #1    Part Number = 0x2004 [VIEWPixx /3D Lite]
+[4.1] > VIEWPixx #1    has 256 MB of RAM
+[4.1] > VIEWPixx #1    firmware revision 56
+[4.1] > VIEWPixx #1    +5V supply voltage is 4.99V, current is 2.15A
+[4.1] > VIEWPixx #1    +12V supply voltage is 11.91V, current is 1.82A
+[4.1] > VIEWPixx #1    internal temperature = 40�C  [104�F]
+[4.1] > VIEWPixx #1    internal temperature2 = 46�C
+[4.1] > VIEWPixx #1    FPGA die temperature = 56�C
+[4.1] > VIEWPixx #1    sampled register read delay Min=99, Max=155, Mean=125 microseconds
+[4.1] > VIEWPixx #1    sampled register write delay Mean=80 microseconds
+               > System test passed
+
+[4.1] > VIEWPixx #1    DDR SDRAM test:
+   Filling 248 MB with 0xFFFF's...7.58 seconds = 34.3 MB/s write speed, DDR BW at 0%
+   Reading 248 MB, verify with 0xFFFF's...6.92 seconds = 37.6 MB/s read speed, DDR BW at 1%
+   Random reads and writes (about 15 seconds)...
+   Filling 248 MB with random data...7.95 seconds = 32.7 MB/s write speed, DDR BW at 0%
+   Reading 248 MB, verify with random data...6.71 seconds = 38.8 MB/s read speed, DDR BW at 1%
+   Filling 248 MB with 0's...7.33 seconds = 35.5 MB/s write speed, DDR BW at 0%
+   Reading 248 MB, verify with 0's...6.22 seconds = 41.8 MB/s read speed, DDR BW at 1%
+               > DDR SDRAM Memory test passed
+
+
+[4.1] > VIEWPixx #1    has 24 digital output bits
+               > DOUT API test passed
+
+[4.1] > VIEWPixx #1    has 24 digital input bits
+               > DIN API test passed
+
+[4.1] > VIEWPixx #1    DOUT->DIN internal loopback tests
+[4.1] > VIEWPixx #1    DIN stabilization filtered out all pulses with width 70 ns and shorter
+[4.1] > VIEWPixx #1    DIN stabilization logged all pulses with width 80 ns and longer
+[4.1] > VIEWPixx #1    DIN button debounce period measurement is 30 ms
+FAIL: [4.1] > VIEWPixx #1    DOUT->DIN external loopback not detected
+
+
+VIEWPixx #1            
+   > FW Revision    56
+   > Part Number    VPX-VPX-2004B
+   > Serial Number   65501-317
+   > VIEWPixx Type  3D Lite
+   > LCD Type       VPX3D Gen 2
+   > Device Name  

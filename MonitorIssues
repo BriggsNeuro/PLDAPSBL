@@ -1,0 +1,25 @@
+Fixing monitor issues:
+
+First, log out and log in (resets screen configuration)
+
+Then, open NVIDIA application (in toolbar on right) and check that the settings are correct:
+	X Server Display Configuration Tab:
+		- 2 screens visible; left: User screen; right: ViexPixx
+		- click on the user screen: 
+			Configuration: X screen 0
+		- click on the ViewPixx screen: 
+			Configuration X screen 1
+			resolution: 1920 x 1080
+			120 HZ
+			no rotation, no reflection
+
+	GPU1 Tab, submenu for the Viewpixx monitor, submenu controls:
+		- Color Range: Full
+		- Dithering: Disabled
+
+Next steps:
+- If the Viewpixx shows up as disabled, or is assigned anything other than X screen 1, contact 	Kristina
+- If the resolution and frame rate are wrong, change and hit apply, then quit NVidia app
+- If dithering has been enabled, disable and quit Nvidia app (is applied automatically)
+
+

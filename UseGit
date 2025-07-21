@@ -1,0 +1,31 @@
+Using Gitkraken:
+
+1) open Gitkraken app
+
+2) test connection to Github:
+	- Go to File -> Preferences -> Integrations -> GitHub
+	- Should show connected
+	- If disconnected:
+		- open Firefox (needs to run in background)
+		- go back to GitHub
+		- Click on 'Connect to github'
+		- may ask for username and password: 
+			username: BriggsNeuro 
+			password: Ferrets2020!@%
+	- Exit preferences 		
+
+3) To get new experiment files:
+	- Go to PLDAPSBL tab
+	- Click 'Pull' (middle of top toolbar)
+	- if 'main' is next to the computer symbol and the blue/white symbol, you are up to date
+	
+4) To upload changes:
+	- Go to PLDAPSBL tab
+	- on the top of the list should be an item called '//WIP' - click on that if not already selected
+	- edited files will show up under 'unstaged files' in the top window on the right
+	- click 'stage all changes' to move them one window down (staged files)
+	- type a short description into the commit window where is says 'commit summary'
+	- hit commit changes button on bottom right
+	- click 'push' (top toolbar)
+	- again, main, the computer icon and the blue/white icon should appear next to each other
+
