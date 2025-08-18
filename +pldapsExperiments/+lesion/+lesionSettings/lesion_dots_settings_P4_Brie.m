@@ -3,9 +3,9 @@ function s = lesion_dots_settings_P4_Brie
 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.2 0.325 0.325];
-s.stimulus.width=50; %start value (deg)
-s.stimulus.delta_width = 10; %step size using keys (deg)
+s.behavior.reward.amount = [0.2 0.275 0.275];
+s.stimulus.width=30; %start value (deg)
+s.stimulus.delta_width = 5; %step size using keys (deg)
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 

@@ -3,9 +3,9 @@ function s = lesion_dots_settings_P4_Gouda
 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.08 0.25 0.25];
-s.stimulus.width=20; %start value (deg)
-s.stimulus.delta_width = 10; %step size using keys (deg)
+s.behavior.reward.amount = [0.09 0.25 0.25];
+s.stimulus.width=10; %start value (deg)
+s.stimulus.delta_width = 5; %step size using keys (deg)
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 

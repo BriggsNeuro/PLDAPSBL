@@ -2,11 +2,11 @@ function s = lesion_dots_settings_P3_Brie
 %This phase adjusts the dot density and dot size 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.1 0.275 0.275];
-s.stimulus.dotSize = 1.5; %start size (deg)
+s.behavior.reward.amount = [0.2 0.325 0.325];
+s.stimulus.dotSize = 0.7; %start size (deg)
 s.stimulus.delta_size = .2; %step size for size (up/down key)
-s.stimulus.dotDensity = 0.12; %start density (dots/deg^2)
-s.stimulus.delta_den = 0.08; %step size for density (left/right key)
+s.stimulus.dotDensity = 0.75; %start density (dots/deg^2)
+s.stimulus.delta_den = 0.15; %step size for density (left/right key)
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
