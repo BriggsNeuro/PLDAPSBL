@@ -17,6 +17,7 @@ if dinStatus.newLogFrames > 0
     [log_data, tt] = Datapixx('ReadDinLog');
     for i = 1:dinStatus.newLogFrames
     data = dec2bin(log_data(i));
+    %disp(data);
     %starti = p.trial.datapixx.din.dataSampleCount+1;
     %endi = p.trial.datapixx.din.dataSampleCount + dinStatus.newLogFrames;
     %inds = starti:endi;
@@ -58,7 +59,8 @@ else
            p = subsasgn(p,iSub,channelStatus);
        else
            iSub(end).subs{2} = p.trial.datapixx.din.dataSampleCount;
-           p = subsasgn(p,iSub,[1 1 1 1]); %changed from [1 1 1], KN 6/9/25
+           tmp=ones(1,p.trial.ports.nPorts);
+           p = subsasgn(p,iSub,tmp); %changed from [1 1 1], KN 6/9/25
        end
     end
          

@@ -17,7 +17,7 @@ switch state
     case p.trial.pldaps.trialStates.frameDraw
         if p.trial.state==p.trial.stimulus.states.START
             Screen(p.trial.display.ptr, 'FillRect', p.trial.display.bgColor);
-        elseif p.trial.state==p.trial.stimulus.states.STIMON || p.trial.state==p.trial.stimulus.states.INCORRECT
+        elseif p.trial.state==p.trial.stimulus.states.STIMON 
             showStimulus(p); %we adjust duration in this function
             
         end
@@ -34,7 +34,15 @@ end
 %check port status and set events accordingly
 function p=checkState(p)
 
+%disp(p.trial.ports.status)
+
 activePort=find(p.trial.ports.status==1);
+
+%we're removing exit port for most states since it is triggered by mistake
+%too often
+if p.trial.state ~= p.trial.stimulus.states.STIMON
+    activePort=activePort(activePort~=p.trial.stimulus.port.EXIT);
+end
 
 
 switch p.trial.state
@@ -85,7 +93,14 @@ switch p.trial.state
             p.trial.state=p.trial.stimulus.states.STIMON;
         end
         
-    case p.trial.stimulus.states.STIMON %stimulus shown; port selected in response
+    case p.trial.stimulus.states.STIMON %stimulus shown; leave on until exit port crossed
+         if ismember(p.trial.stimulus.port.EXIT, activePort)
+             p.trial.stimulus.timeExitCross = p.trial.ttime;
+             p.trial.stimulus.frameExitCross = p.trial.iFrame;
+             p.trial.state = p.trial.stimulus.states.STIMOFF;
+         end
+
+    case p.trial.stimulus.states.STIMOFF % port selected in response to stimulus
         %check whether left or right port chosen
         if ismember(activePort, [p.trial.stimulus.port.LEFT p.trial.stimulus.port.RIGHT])
             %note time

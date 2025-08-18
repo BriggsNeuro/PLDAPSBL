@@ -25,6 +25,7 @@ p.defaultParameters.stimulus.port.START = 2;
 p.defaultParameters.stimulus.port.LEFT = 4;
 p.defaultParameters.stimulus.port.RIGHT = 1;
 p.defaultParameters.stimulus.port.MIDDLE = 3;
+p.defaultParameters.stimulus.port.EXIT = 5;
 
 
 
@@ -50,6 +51,8 @@ p.defaultParameters.stimulus.states.MOVESTAGE = 9;
 p.defaultParameters.stimulus.states.BASELINE = 0;
 p.defaultParameters.stimulus.states.MOVE = 11;
 p.defaultParameters.stimulus.states.WAITSTART = 12;
+p.defaultParameters.stimulus.states.STIMOFF = 13;
+
 
 %-------------------------------------------------------------------------%
 % Trigger States

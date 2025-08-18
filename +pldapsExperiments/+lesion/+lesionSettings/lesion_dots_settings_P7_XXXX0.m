@@ -33,4 +33,6 @@ s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
 s.stimulus.centerY=540; %vertical stimulus position (pixels)
 s.stimulus.offset=15; %horizontal offset in deg (from point where stimulus turns on)
 
+s.datapixx.din.channels.ports = [0 2 4 6 12];
+
 
