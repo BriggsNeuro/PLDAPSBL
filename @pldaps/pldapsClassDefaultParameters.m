@@ -158,7 +158,7 @@ s.  datapixx.   dio.    useForReward = 1; % 0 for adc IR
  s.	newEraSyringePump.	lowNoiseMode = 0;
  s.	newEraSyringePump.	port = '/dev/ttyUSB0';
  s.	newEraSyringePump.	rate = 2120; %mL/hr
- s.	newEraSyringePump.	use = [0 0 0 0];
+ s.	newEraSyringePump.	use = 0; %KN change 8/19/25
 %  s. newEraSyringePump.  noPumps = length(find(s.newEraSyringePump.use));
 
 %s.	pldaps.

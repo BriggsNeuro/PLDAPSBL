@@ -94,11 +94,12 @@ switch p.trial.state
         end
         
     case p.trial.stimulus.states.STIMON %stimulus shown; leave on until exit port crossed
-         if ismember(p.trial.stimulus.port.EXIT, activePort)
-             p.trial.stimulus.timeExitCross = p.trial.ttime;
-             p.trial.stimulus.frameExitCross = p.trial.iFrame;
-             p.trial.state = p.trial.stimulus.states.STIMOFF;
-         end
+        if ismember(p.trial.stimulus.port.EXIT, activePort)
+            p.trial.stimulus.timeExitCross = p.trial.ttime;
+            p.trial.stimulus.frameExitCross = p.trial.iFrame;
+            p.trial.state = p.trial.stimulus.states.STIMOFF;
+        end
+
 
     case p.trial.stimulus.states.STIMOFF % port selected in response to stimulus
         %check whether left or right port chosen
@@ -227,9 +228,6 @@ function p=trialSetup(p)
         p.trialMem.correct = 0;
     end
 
-    if ~isfield(p.trialMem,'durStim')
-        p.trialMem.durStim=p.trial.stimulus.durStim;
-    end
 
     % set up stimulus    
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
@@ -292,7 +290,7 @@ function p=trialSetup(p)
     end
     
     %compute nr frames
-    p.trial.stimulus.nrFrames=p.trialMem.durStim*p.trial.stimulus.frameRate;
+    p.trial.stimulus.nrFrames=p.trial.stimulus.durStim*p.trial.stimulus.frameRate;
     
     %save misc variables
     p.trial.stimulus.randpos = randpos;
@@ -373,7 +371,6 @@ function cleanUpandSave(p)
         
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
-    disp(['Current Stim duration:  ' num2str(p.trialMem.durStim)])
     %show reward amount
     if p.trial.pldaps.draw.reward.show
         pds.behavior.reward.showReward(p,{'S';'L';'R'})
@@ -384,14 +381,7 @@ function cleanUpandSave(p)
     disp(num2str(vertcat(p.trialMem.stats.val,p.trialMem.stats.count.Ntrial,...
         p.trialMem.stats.count.correct./p.trialMem.stats.count.Ntrial*100)))
 
-    switch p.trial.userInput
-        case 1 %left key
-            p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
-            disp(['increased stim duration to ' num2str(p.trialMem.durStim)])
-        case 2 %right key
-            p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
-            disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
-    end
+
 
 %% Helper functions
 %-------------------------------------------------------------------%

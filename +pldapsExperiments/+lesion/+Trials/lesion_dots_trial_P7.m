@@ -36,6 +36,12 @@ function p=checkState(p)
 
 activePort=find(p.trial.ports.status==1);
 
+%we're removing exit port for most states since it is triggered by mistake
+%too often
+if p.trial.state ~= p.trial.stimulus.states.STIMON
+    activePort=activePort(activePort~=p.trial.stimulus.port.EXIT);
+end
+
 
 switch p.trial.state
     case p.trial.stimulus.states.START %trial started
@@ -85,8 +91,15 @@ switch p.trial.state
             p.trial.state=p.trial.stimulus.states.STIMON;
         end
         
-    case p.trial.stimulus.states.STIMON %stimulus shown; port selected in response
-        %check whether left or right port chosen
+    case p.trial.stimulus.states.STIMON %stimulus shown; 
+        if ismember(p.trial.stimulus.port.EXIT, activePort)
+            p.trial.stimulus.timeExitCross = p.trial.ttime;
+            p.trial.stimulus.frameExitCross = p.trial.iFrame;
+            p.trial.state = p.trial.stimulus.states.STIMOFF;
+        end
+
+
+    case p.trial.stimulus.states.STIMOFF % port selected in response to stimulus  
         if ismember(activePort, [p.trial.stimulus.port.LEFT p.trial.stimulus.port.RIGHT])
             %note time
             p.trial.stimulus.timeTrialFirstResp = p.trial.ttime;
