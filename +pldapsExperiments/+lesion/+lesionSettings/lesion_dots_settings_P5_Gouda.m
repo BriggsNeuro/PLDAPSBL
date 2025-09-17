@@ -1,11 +1,10 @@
-function s = lesion_dots_settings_P4_Brie
-%This phase adjusts the stimulus size  
-
+function s = lesion_dots_settings_P5_Gouda
+%This phase adjusts the stimulus offset
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.19 0.25 0.25];
-s.stimulus.width=10; %start value (deg)
-s.stimulus.delta_width = 5; %step size using keys (deg)
+s.behavior.reward.amount = [0.09 0.25 0.25];
+s.stimulus.offset=5; %start offset in deg (from point where stimulus turns on)
+s.stimulus.delta_offset = 2.5;%step size for offset in deg
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
@@ -21,5 +20,8 @@ s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
 s.stimulus.durStim = 30; %sec
+s.stimulus.width=10; %deg
+s.stimulus.stimSide= [-1 1];
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
+s.stimulus.centerY=540; %vertical stimulus position (pixels)
 
