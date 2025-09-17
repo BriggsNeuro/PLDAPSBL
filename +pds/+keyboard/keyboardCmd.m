@@ -47,11 +47,27 @@ if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Darrow) %right arrow = us
     disp('down key')
 end
 
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.mKey) %right arrow = user 5
+    p.trial.userInput=5;
+    disp('M key')
+end
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.nKey) %right arrow = user 6
+    p.trial.userInput=6;
+    disp('N key')
+end
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.rKey)  %r = user 7
+    p.trial.userInput=7;
+    disp('R key')
+end
+
 if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.spaceKey) %change trials list
-    p.trialMem.whichConditions = mod(p.trialMem.whichConditions+1,length(p.trial.allconditions));
-    p.conditions = p.trial.allconditions{p.trialMem.whichConditions + 1};
-    disp(['Switched to trials list:' num2str(p.trialMem.whichConditions) ]);
+    pds.behavior.updateTrialList(p); %keeping it minimal here; counters etc happen in trial file
     p.trial.userInput= -1;
+
+    %p.trialMem.whichConditions = mod(p.trialMem.whichConditions+1,length(p.trial.allconditions));
+    %p.conditions = p.trial.allconditions{p.trialMem.whichConditions + 1};
+    %disp(['Switched to trials list:' num2str(p.trialMem.whichConditions) ]);
+    %p.trial.userInput= -1;
 end
 
 %%%%%change reward amounts
