@@ -6,6 +6,7 @@ pldapsDefaultTrialFunction(p,state);
 
 %add functions to particular states
 switch state
+    
     case p.trial.pldaps.trialStates.trialSetup
         trialSetup(p);
         
@@ -17,7 +18,7 @@ switch state
     case p.trial.pldaps.trialStates.frameDraw
         if p.trial.state==p.trial.stimulus.states.START
             Screen(p.trial.display.ptr, 'FillRect', p.trial.display.bgColor);
-        elseif p.trial.state==p.trial.stimulus.states.STIMON || p.trial.state==p.trial.stimulus.states.INCORRECT
+        elseif p.trial.state==p.trial.stimulus.states.STIMON 
             showStimulus(p);
             
         end
@@ -129,8 +130,6 @@ switch p.trial.state
             p.trial.stimulus.timeTrialFinish = p.trial.ttime;
             p.trial.stimulus.frameTrialFinish = p.trial.iFrame;
             
-            p.trialMem.correct = p.trialMem.correct + 1;
-
             %advance state, mark as correct trial and flag next trial
             p.trial.state=p.trial.stimulus.states.TRIALCOMPLETE;
             p.trial.pldaps.goodtrial = 1;
@@ -187,7 +186,6 @@ end
 %------------------------------------------------------------------%
 %% setup trial parameters, prep stimulus as far as possible
 function p=trialSetup(p)
-    
     if isfield(p.trial,'masktxtr')
         Screen('Close',p.trial.masktxtr);
     end
@@ -207,7 +205,7 @@ function p=trialSetup(p)
         case 3
             p.trial.side=p.trial.stimulus.side.MIDDLE;
     end
-    
+
     if ~isfield(p.trialMem,'offset')
         p.trialMem.offset=p.trial.stimulus.offset;
     end
@@ -231,17 +229,21 @@ function p=trialSetup(p)
 
     %determine direction and side; we'll keep direction and adjust side as
     %needed for match condition
-    sideResp=p.conditions{p.trial.pldaps.iTrial}.side;
-
     %direction is tethered to response side, using that to make code
     %simpler
+
+    sideResp=p.conditions{p.trial.pldaps.iTrial}.side;
     p.trial.stimulus.dir = p.trial.stimulus.direction(sideResp);
+          
+    
     %figure out side based on match type
     switch p.trialMem.matchType
         case 0 %full cross
-            sideIdx = mod(condIdx-1)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
-            p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
+            
             p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
+            sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
+            p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
+             
         case 1 % either 0 & R, or 180 & L
             if p.trial.stimulus.dir == 0
                 p.trial.stimulus.sSide = 1;
@@ -261,6 +263,7 @@ function p=trialSetup(p)
                 p.trialMem.condIdx=4;
             end
     end
+   
 
     %stimulus center
     p.trial.stimulus.centerX = p.trial.display.pWidth/2;                                                       
@@ -301,7 +304,7 @@ function p=trialSetup(p)
     randdir(1:end)=p.trial.stimulus.dir;
     idx=find(noisevec==0);
     randdir(idx)=randi([0,359],length(idx),1);
-    
+
     
     %initialize lifetime vector
     if p.trial.stimulus.dotLifeFr>0
@@ -321,7 +324,6 @@ function p=trialSetup(p)
     if p.trial.camera.use
         pds.behavcam.startcam(p);
     end
-
     
 
 %------------------------------------------------------------------%
