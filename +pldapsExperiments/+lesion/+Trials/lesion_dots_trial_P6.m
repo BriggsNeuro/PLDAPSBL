@@ -18,7 +18,7 @@ switch state
         if p.trial.state==p.trial.stimulus.states.START
             Screen(p.trial.display.ptr, 'FillRect', p.trial.display.bgColor);
         elseif p.trial.state==p.trial.stimulus.states.STIMON 
-            showStimulus(p); 
+            showStimulus(p); %we adjust duration in this function
             
         end
      
@@ -35,13 +35,6 @@ end
 function p=checkState(p)
 
 activePort=find(p.trial.ports.status==1);
-
-%remove exit port from trial.port.status list since it is triggered with
-%other ports in too many instances, with the exception of the state we need
-%it in
-if p.trial.state ~= p.trial.stimulus.states.STIMON
-    activePort=activePort(activePort~=p.trial.stimulus.port.EXIT);
-end
 
 
 switch p.trial.state
@@ -94,14 +87,7 @@ switch p.trial.state
             p.trial.state=p.trial.stimulus.states.STIMON;
         end
         
-    case p.trial.stimulus.states.STIMON
-        if ismember(p.trial.stimulus.port.EXIT, activePort)
-            p.trial.stimulus.timeExitCross = p.trial.ttime;
-            p.trial.stimulus.frameExitCross = p.trial.iFrame;
-            p.trial.state=p.trial.stimulus.states.STIMOFF;
-        end
-
-    case p.trial.stimulus.states.STIMOFF %stimulus shown; port selected in response
+    case p.trial.stimulus.states.STIMON %stimulus shown; port selected in response
         %check whether left or right port chosen
         if ismember(activePort, [p.trial.stimulus.port.LEFT p.trial.stimulus.port.RIGHT])
             %note time
@@ -145,7 +131,6 @@ switch p.trial.state
             p.trial.stimulus.timeTrialFinish = p.trial.ttime;
             p.trial.stimulus.frameTrialFinish = p.trial.iFrame;
             
-
             %advance state, mark as correct trial and flag next trial
             p.trial.state=p.trial.stimulus.states.TRIALCOMPLETE;
             p.trial.pldaps.goodtrial = 1;
@@ -227,6 +212,10 @@ function p=trialSetup(p)
         p.trialMem.condIdx=1;
     end
 
+    if ~isfield(p.trialMem,'durStim')
+        p.trialMem.durStim=p.trial.stimulus.durStim;
+    end
+
     if ~isfield(p.trialMem,'matchType')
         p.trialMem.matchType=p.trial.stimulus.iniMatchType;
     end
@@ -244,18 +233,17 @@ function p=trialSetup(p)
     %needed for match condition
     %direction is tethered to response side, using that to make code
     %simpler
-
     sideResp=p.conditions{p.trial.pldaps.iTrial}.side;
     p.trial.stimulus.dir = p.trial.stimulus.direction(sideResp);
 
     %figure out side based on match type
     switch p.trialMem.matchType
         case 0 %full cross
-            
+
             p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
             sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
             p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
-             
+
         case 1 % either 0 & R, or 180 & L
             if p.trial.stimulus.dir == 0
                 p.trial.stimulus.sSide = 1;
@@ -276,12 +264,12 @@ function p=trialSetup(p)
             end
     end
 
+
     %stimulus center
     p.trial.stimulus.centerX = p.trial.display.pWidth/2;
     p.trial.stimulus.offsetPx=round(p.trial.stimulus.offset*PixPerDeg);
     p.trial.stimulus.centerX=p.trial.stimulus.centerX+...
         p.trial.stimulus.sSide*p.trial.stimulus.offsetPx;
-
 
         
     %number of dots - density is in dots/deg^2, size in deg
@@ -296,7 +284,8 @@ function p=trialSetup(p)
     
     %dot lifetime in frames (lifetime is in ms)
     p.trial.stimulus.dotLifeFr = round(p.trial.stimulus.dotLifetime*p.trial.stimulus.frameRate/1000);
-           
+       
+    
 
     %initialize frame
     p.trial.stimulus.frameI = 0;
@@ -325,7 +314,7 @@ function p=trialSetup(p)
     end
     
     %compute nr frames
-    p.trial.stimulus.nrFrames=p.trial.stimulus.durStim*p.trial.stimulus.frameRate;
+    p.trial.stimulus.nrFrames=p.trialMem.durStim*p.trial.stimulus.frameRate;
     
     %save misc variables
     p.trial.stimulus.randpos = randpos;
@@ -406,6 +395,7 @@ function cleanUpandSave(p)
         
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
+    disp(['Current Stim duration:  ' num2str(p.trialMem.durStim)])
     %show reward amount
     if p.trial.pldaps.draw.reward.show
         pds.behavior.reward.showReward(p,{'S';'L';'R'})
@@ -416,15 +406,20 @@ function cleanUpandSave(p)
     pds.behavior.printCounter(p.trialMem.stats.sideCounter,p.trialMem.stats.sideCounterNames)
     pds.behavior.printCounter(p.trialMem.stats.condCounter,p.trialMem.stats.condCounterNames)
 
-
     switch p.trial.userInput
+        case 1 %left key
+            p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
+            disp(['increased stim duration to ' num2str(p.trialMem.durStim)])
+        case 2 %right key
+            p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
+            disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
         case 5 %M key
             p.trialMem.matchType = 2;
             disp('Matching Response Condition if [Bad% Good%][Good% Bad%]')
         case 6 %N key
             p.trialMem.matchType = 1;
             disp('Non-Matching Response Condition if [Good% Bad%][Bad% Good%]')
-        case 7 %O key
+        case 7 %R key
             p.trialMem.matchType = 0;
             disp('All 4 Response Conditions')
     end

@@ -5,7 +5,8 @@ function s = lesion_dots_settings_P6_XXXX0
 s.behavior.reward.amount = [0.2 0.275 0.275];
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
-
+s.stimulus.durStim = 1; %default stimulus duration
+s.stimulus.delta_durStim = 0.2; %step size for duration adjustments
 
 %%%these parameters should not be changed without discussion
 s.stimulus.dotSize=0.7; %deg
@@ -17,14 +18,13 @@ s.stimulus.dotLifetime = 25; %ms,
 s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
-s.stimulus.durStim = 2; %default stimulus duration
 s.stimulus.width=10; %deg
 s.stimulus.stimSide= [-1 1];
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
 s.stimulus.centerY=540; %vertical stimulus position (pixels)
 s.stimulus.offset=15; %horizontal offset in deg (from point where stimulus turns on)
-s.datapixx.din.channels.ports = [0 2 4 6 10];
-s.ports.nPorts = 5;
+%s.datapixx.din.channels.ports = [0 2 4 6 10];
+%s.ports.nPorts = 5;
 s.stimulus.iniMatchType=0; %value:  0-normal, 1-non-matching choice, 2-matching choice
 s.stimulus.cond.Ncond=4; %stim side x direction, mapping will L - 0, R - 0, L - 180, R - 180 (split by response sid0e
 s.stimulus.cond.counterIdx=[1 3 2 4]; %index into the counter for each condition
