@@ -3,9 +3,9 @@ function s = lesion_dots_settings_P5_XXXX0
 
 %%%these parameters can get changed
 s.behavior.reward.amount = [0.15 0.35 0.35 0.35];
-s.stimulus.offset=5; %start offset in deg (from point where stimulus turns on)
+s.stimulus.offset=15; %start offset in deg (from point where stimulus turns on)
 s.stimulus.delta_offset = 2.5;%step size for offset in deg
-s.display.viewdist = 56; %cm
+s.display.viewdist = 54; %cm
 s.stimulus.duration.ITI = 0.2;
 
 

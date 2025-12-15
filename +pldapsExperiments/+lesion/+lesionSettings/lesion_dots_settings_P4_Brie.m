@@ -3,10 +3,10 @@ function s = lesion_dots_settings_P4_Brie
 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.19 0.25 0.25];
+s.behavior.reward.amount = [0.13 0.25 0.25];
 s.stimulus.width=10; %start value (deg)
 s.stimulus.delta_width = 5; %step size using keys (deg)
-s.display.viewdist = 56; %cm
+s.display.viewdist = 54; %cm
 s.stimulus.duration.ITI = 0.2;
 
 
@@ -20,6 +20,6 @@ s.stimulus.dotLifetime = 25; %ms,
 s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
-s.stimulus.durStim = 30; %sec
+s.stimulus.durStim = 120; %sec
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
 

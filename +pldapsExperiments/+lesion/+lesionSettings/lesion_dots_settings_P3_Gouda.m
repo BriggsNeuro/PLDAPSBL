@@ -1,4 +1,4 @@
-function s = lesion_dots_settings_P3_Brie
+function s = lesion_dots_settings_P3_Gouda
 %This phase adjusts the dot density and dot size 
 
 %%%these parameters can get changed

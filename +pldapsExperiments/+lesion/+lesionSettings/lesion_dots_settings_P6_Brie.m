@@ -1,12 +1,12 @@
-function s = lesion_dots_settings_P6_XXXX0
+function s = lesion_dots_settings_P6_Brie
 %This phase adjusts the stimulus duration
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0 0 0];
+s.behavior.reward.amount = [0.08 0.225 0.225];
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.05;
 s.stimulus.durStim = 1; %default stimulus duration
-s.stimulus.delta_durStim = 0.1; %step size for duration adjustments
+s.stimulus.delta_durStim = 0.05; %step size for duration adjustments
 
 %%%these parameters should not be changed without discussion
 s.stimulus.dotSize=0.7; %deg

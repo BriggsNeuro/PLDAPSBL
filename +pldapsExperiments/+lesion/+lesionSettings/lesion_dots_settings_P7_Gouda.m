@@ -1,18 +1,17 @@
-function s = lesion_dots_settings_P7_XXXX0
-
+function s = lesion_dots_settings_P7_Gouda
 %measure psychometric functions for both sides using staircase
 %left arrpw turns left staircase on/off
 %right arrow turns right staircase on/off
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0 0 0];
-s.stimulus.stairL= 0; %staircase state L (off initially)
+s.behavior.reward.amount = [0.08 0.225 0.225];
+s.stimulus.stairL=0; %staircase state L (off initially)
 s.stimulus.dotCoherenceL =  1; %start level L
 s.stimulus.delta_cohL =  0.2; %coherence staircase step L
-s.stimulus.stairR= 0; %staircase state R 
+s.stimulus.stairR=0; %staircase state R 
 s.stimulus.dotCoherenceR =  1; %start level R
 s.stimulus.delta_cohR =  0.2; %coherence staircase step R
-s.display.viewdist = 56; %cm
+s.display.viewdist = 54; %cm
 s.stimulus.duration.ITI = 0.2;
 
 
@@ -22,7 +21,7 @@ s.stimulus.dotDensity = 0.75; %dots/deg^2
 s.stimulus.dotCohDefaultL=1; %level if there is no staircase
 s.stimulus.dotCohDefaultR=1; %level if there is no staircase
 s.stimulus.dotColor = 0;
-s.stimulus.dotSpeed = 72; %deg/sec
+s.stimulus.dotSpeed = 48; %deg/sec
 s.stimulus.dotLifetime = 25; %ms, 
 s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
