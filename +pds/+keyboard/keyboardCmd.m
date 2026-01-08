@@ -37,21 +37,21 @@ if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Rarrow) %right arrow = us
     disp('right key')
 end
 
-if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Uarrow) %right arrow = user 2
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Uarrow) %up arrow = user 3
     p.trial.userInput=3;
     disp('up key')
 end
 
-if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Darrow) %right arrow = user 2
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.Darrow) %down arrow = user 4
     p.trial.userInput=4;
     disp('down key')
 end
 
-if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.mKey) %right arrow = user 5
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.mKey) %mkey = user 5
     p.trial.userInput=5;
     disp('M key')
 end
-if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.nKey) %right arrow = user 6
+if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.nKey) %nkey = user 6
     p.trial.userInput=6;
     disp('N key')
 end
@@ -61,8 +61,10 @@ if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.rKey)  %r = user 7
 end
 
 if p.trial.keyboard.firstPressQ(p.trial.keyboard.codes.spaceKey) %change trials list
-    pds.behavior.updateTrialList(p); %keeping it minimal here; counters etc happen in trial file
-    p.trial.userInput= -1;
+    %pds.behavior.updateTrialList(p); %keeping it minimal here; counters etc happen in trial file
+    p.trial.userInput= -1; %indicate switch necessary
+    p.trialMem.switchList=1;
+    disp('space bar')
 
     %p.trialMem.whichConditions = mod(p.trialMem.whichConditions+1,length(p.trial.allconditions));
     %p.conditions = p.trial.allconditions{p.trialMem.whichConditions + 1};

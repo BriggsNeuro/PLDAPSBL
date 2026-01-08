@@ -1,4 +1,4 @@
-function lesion_dots_trial_P6(p,state)
+function lesion_dots_trial_P7Level(p,state)
 %This phase adjusts the stimulus duration
 
 %use normal functionality in states
@@ -212,15 +212,62 @@ function p=trialSetup(p)
         p.trialMem.condIdx=1;
     end
 
-    if ~isfield(p.trialMem,'durStim')
-        p.trialMem.durStim=p.trial.stimulus.durStim;
-    end
-
     if ~isfield(p.trialMem,'matchType')
         p.trialMem.matchType=p.trial.stimulus.iniMatchType;
     end
 
-    % set up stimulus    
+    %determine direction and side; we'll keep direction and adjust side as
+    %needed for match condition for trials list 1
+    %direction is tethered to response side, using that to make code
+    %simpler
+    sideResp=p.conditions{p.trial.pldaps.iTrial}.side;
+    p.trial.stimulus.dir = p.trial.stimulus.direction(sideResp);
+
+
+    if p.trialMem.whichConditions==0 %100 only; locking possible
+
+        p.trial.stimulus.dotCoh=1;
+
+        %figure out side based on match type
+        switch p.trialMem.matchType
+            case 0 %full cross
+                p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
+                sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
+                p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
+
+            case 1 % either 0 & R, or 180 & L
+                if p.trial.stimulus.dir == 0
+                    p.trial.stimulus.sSide = 1;
+                    %overwrite condition idx to end up in the correct counter
+                    %bin
+                    p.trialMem.condIdx=2;
+                elseif p.trial.stimulus.dir == 180
+                    p.trial.stimulus.sSide = -1;
+                    p.trialMem.condIdx=3;
+                end
+            case 2 % either 0 & L, or 180 & R
+                if p.trial.stimulus.dir == 0
+                    p.trial.stimulus.sSide = -1;
+                    p.trialMem.condIdx=1;
+                elseif p.trial.stimulus.dir == 180
+                    p.trial.stimulus.sSide = 1;
+                    p.trialMem.condIdx=4;
+                end
+        end
+
+    else %variable coherence levels
+        cIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx;
+        %p.trialMem.condIdx=cIdx; %we need this for counting
+       
+        cohIdx=mod(cIdx-1,5)+1;        
+        p.trial.stimulus.dotCoh=p.trial.stimulus.dotCoherence(cohIdx);
+
+        sideIdx=floor((cIdx-1)/5)+1; %sideIdx 1 & 3 -> L, 2 & 4 -> R
+        p.trial.stimulus.sSide = p.trial.stimulus.stimSide(rem(sideIdx-1,2)+1);
+
+    end
+
+    % set up stimulus
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
     PixPerDeg = 1/DegPerPix;
     
@@ -228,42 +275,6 @@ function p=trialSetup(p)
     p.trial.stimulus.height=p.trial.stimulus.width;
     p.trial.stimulus.pWidth=round(p.trial.stimulus.width*PixPerDeg);
     p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
-
-    %determine direction and side; we'll keep direction and adjust side as
-    %needed for match condition
-    %direction is tethered to response side, using that to make code
-    %simpler
-    sideResp=p.conditions{p.trial.pldaps.iTrial}.side;
-    p.trial.stimulus.dir = p.trial.stimulus.direction(sideResp);
-
-    %figure out side based on match type
-    switch p.trialMem.matchType
-        case 0 %full cross
-
-            p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
-            sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
-            p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
-
-        case 1 % either 0 & R, or 180 & L
-            if p.trial.stimulus.dir == 0
-                p.trial.stimulus.sSide = 1;
-                %overwrite condition idx to end up in the correct counter
-                %bin
-                p.trialMem.condIdx=2;
-            elseif p.trial.stimulus.dir == 180
-                p.trial.stimulus.sSide = -1;
-                p.trialMem.condIdx=3;
-            end
-        case 2 % either 0 & L, or 180 & R
-            if p.trial.stimulus.dir == 0
-                p.trial.stimulus.sSide = -1;
-                p.trialMem.condIdx=1;
-            elseif p.trial.stimulus.dir == 180
-                p.trial.stimulus.sSide = 1;
-                p.trialMem.condIdx=4;
-            end
-    end
-
 
     %stimulus center
     p.trial.stimulus.centerX = p.trial.display.pWidth/2;
@@ -296,7 +307,7 @@ function p=trialSetup(p)
     randpos(2,:)=(randpos(2,:)-0.5)*p.trial.stimulus.pHeight;
     
     %initialize noise vector
-    nrSignal=round(p.trial.stimulus.nrDots*p.trial.stimulus.dotCoherence);
+    nrSignal=round(p.trial.stimulus.nrDots*p.trial.stimulus.dotCoh);
     noisevec=zeros(p.trial.stimulus.nrDots,1);
     noisevec(1:nrSignal)=1;
     
@@ -314,7 +325,7 @@ function p=trialSetup(p)
     end
     
     %compute nr frames
-    p.trial.stimulus.nrFrames=p.trialMem.durStim*p.trial.stimulus.frameRate;
+    p.trial.stimulus.nrFrames=p.trial.stimulus.durStim*p.trial.stimulus.frameRate;
     
     %save misc variables
     p.trial.stimulus.randpos = randpos;
@@ -366,7 +377,7 @@ function showStimulus(p)
             %directions are drawn based on coherence level
             rvec=rand(size(idx));
             for i=1:length(idx)
-                if rvec(i)<p.trial.stimulus.dotCoherence %these get moved with the signal
+                if rvec(i)<p.trial.stimulus.dotCoh %these get moved with the signal
                     randdir(idx(i))=p.trial.stimulus.dir;
                 else
                     randdir(idx(i))=randi([0,359],1,1);
@@ -402,17 +413,24 @@ function cleanUpandSave(p)
     end
     
     %show stats
-    pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, 1, p.trialMem.condIdx); %updates counters
+    %pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, p.trialMem.condIdx); %updates counters
+    %pds.behavior.printCounter(p.trialMem.stats.sideCounter,p.trialMem.stats.sideCounterNames)
+    %pds.behavior.printCounter(p.trialMem.stats.condCounter,p.trialMem.stats.condCounterNames)
+
+    %show stats
+    lIdx=p.trialMem.whichConditions+1;
+    if lIdx==1 %first trials list, need condIdx to correctly count
+        pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, lIdx, ...
+            p.trialMem.condIdx); %updates counters
+    else
+        pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, lIdx);
+    end
+
     pds.behavior.printCounter(p.trialMem.stats.sideCounter,p.trialMem.stats.sideCounterNames)
-    pds.behavior.printCounter(p.trialMem.stats.condCounter{1},p.trialMem.stats.condCounterNames{1})
+    pds.behavior.printCounter(p.trialMem.stats.condCounter{lIdx},p.trialMem.stats.condCounterNames{lIdx})
+
 
     switch p.trial.userInput
-        case 1 %left key
-            p.trialMem.durStim=p.trialMem.durStim+p.trial.stimulus.delta_durStim;
-            disp(['increased stim duration to ' num2str(p.trialMem.durStim)])
-        case 2 %right key
-            p.trialMem.durStim=p.trialMem.durStim-p.trial.stimulus.delta_durStim;
-            disp(['decreased stim duration to ' num2str(p.trialMem.durStim)])
         case 5 %M key
             p.trialMem.matchType = 2;
             disp('Matching Response Condition if [Bad% Good%][Good% Bad%]')

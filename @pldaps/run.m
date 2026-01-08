@@ -147,6 +147,9 @@ try
     % Initialize trial locking/switch/bias status
     p.trialMem.lock = 0;
     p.trialMem.switch = 0;
+    %initialize triallist switch
+    p.trialMem.switchList=0;
+    
     p.trialMem.bias = 0;
     p.trialMem.blocknum = 0;
     p.trialMem.exit = 0;
