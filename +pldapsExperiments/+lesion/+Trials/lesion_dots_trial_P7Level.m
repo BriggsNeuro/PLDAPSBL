@@ -406,7 +406,7 @@ function cleanUpandSave(p)
         
     disp('----------------------------------')
     disp(['Trialno: ' num2str(p.trial.pldaps.iTrial)])
-    disp(['Current Stim duration:  ' num2str(p.trialMem.durStim)])
+
     %show reward amount
     if p.trial.pldaps.draw.reward.show
         pds.behavior.reward.showReward(p,{'S';'L';'R'})
