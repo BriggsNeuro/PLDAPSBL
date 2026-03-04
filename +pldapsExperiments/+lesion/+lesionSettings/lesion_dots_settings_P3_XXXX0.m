@@ -2,11 +2,11 @@ function s = lesion_dots_settings_P3_XXXX0
 %This phase adjusts the dot density and dot size 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.09 0.25 0.25];
+s.behavior.reward.amount = [0.08 0.25 0.25];
 s.stimulus.dotSize = 1.5; %start size (deg)
 s.stimulus.delta_size = .1; %step size for size (up/down key)
 s.stimulus.dotDensity = 0.12; %start density (dots/deg^2)
-s.stimulus.delta_den = .15; %step size for density (left/right key)
+s.stimulus.delta_den = .09; %step size for density (left/right key)
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
@@ -18,7 +18,7 @@ s.stimulus.dotLifetime = 25; %ms,
 s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
-s.stimulus.durStim = 30; %sec
+s.stimulus.durStim = 60; %sec
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
 
 

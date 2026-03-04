@@ -2,7 +2,7 @@ function s = lesion_dots_settings_P5_XXXX1
 %This phase adjusts the stimulus offset
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0 0 0];
+s.behavior.reward.amount = [0.08 0.25 0.25];
 s.stimulus.offset= 0; %start offset in deg (from point where stimulus turns on)
 s.stimulus.delta_offset = 1;%step size for offset in deg
 s.display.viewdist = 56; %cm

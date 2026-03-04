@@ -2,7 +2,7 @@ function s = lesion_dots_settings_P1_XXXX0
 %this phase implements basic left/right dot discrimination
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.1 0.25 0.25];
+s.behavior.reward.amount = [0.15 0.275 0.275];
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
@@ -17,7 +17,7 @@ s.stimulus.dotLifetime = 25; %ms,
 s.stimulus.direction = [0 180];
 s.stimulus.frameRate = 120;
 s.display.bgColor = [.5 .5 .5]; 
-s.stimulus.durStim = 30; %sec
+s.stimulus.durStim = 120; %sec -can change
 
 %s.datapixx.adc.channels = [2 4 6];
 %s.ports.nports=3;

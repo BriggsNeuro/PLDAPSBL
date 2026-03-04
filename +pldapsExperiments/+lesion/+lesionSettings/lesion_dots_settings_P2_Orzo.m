@@ -1,4 +1,4 @@
-function s = lesion_dots_settings_P2_XXXX0
+function s = lesion_dots_settings_P2_Orzo
 %this phase implements the tunnel/more limited viewing time
 
 %%%these parameters can get changed

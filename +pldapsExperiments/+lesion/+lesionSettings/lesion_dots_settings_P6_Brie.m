@@ -5,7 +5,7 @@ function s = lesion_dots_settings_P6_Brie
 s.behavior.reward.amount = [0.08 0.225 0.225];
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.05;
-s.stimulus.durStim = 1; %default stimulus duration
+s.stimulus.durStim = 0.55; %default stimulus duration
 s.stimulus.delta_durStim = 0.05; %step size for duration adjustments
 
 %%%these parameters should not be changed without discussion
@@ -21,7 +21,7 @@ s.display.bgColor = [.5 .5 .5];
 s.stimulus.width=10; %deg
 s.stimulus.stimSide= [-1 1];
 s.stimulus.midpointIR = 1; %turn stimulus on when crossing midline
-s.stimulus.centerY=540; %vertical stimulus position (pixels)
+s.stimulus.centerY=860; %vertical stimulus position (pixels); middle=540
 s.stimulus.offset=15; %horizontal offset in deg (from point where stimulus turns on)
 %s.datapixx.din.channels.ports = [0 2 4 6 10];
 %s.ports.nPorts = 5;
