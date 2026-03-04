@@ -1,11 +1,11 @@
-function p = lesion_dots_setup_P4A(p)
+function p = lesion_dots_setup_P4(p)
 %This phase adjusts the stimulus size  
 
 %% basic definitions
 p = pdsDefaultTrialStructureBL(p); 
 
 %% set the trial function: the function that gets called for each frame state
-p.trial.pldaps.trialFunction='pldapsExperiments.lesion.Trials.lesion_dots_trial_P4A';
+p.trial.pldaps.trialFunction='pldapsExperiments.lesion.Trials.lesion_dots_trial_P4';
 
 %% set general parameters
 p.trial.stimulus.forceCorrect = 1;

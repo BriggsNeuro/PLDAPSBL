@@ -1,9 +1,9 @@
-function s = lesion_dots_settings_P4A_XXXX0
+function s = lesion_dots_settings_P4_XXXX0
 %This phase adjusts the stimulus size  
 
 
 %%%these parameters can get changed
-s.behavior.reward.amount = [0.08 0.25 0.25];
+s.behavior.reward.amount = [0.08 0.225 0.225];
 s.stimulus.width=50; %start value (deg)
 s.stimulus.delta_width = 5; %step size using keys (deg)
 s.display.viewdist = 56; %cm

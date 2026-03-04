@@ -1,5 +1,5 @@
 function lesion_dots_trial_P4(p,state)
-%This phase adjusts the stimulus size  
+%This phase adjusts the stimulus size; stimulus will be shown aligned with bottom edge of screen independent of size  
 
 %use normal functionality in states
 pldapsDefaultTrialFunction(p,state);
@@ -225,6 +225,10 @@ function p=trialSetup(p)
     p.trial.stimulus.pWidth=round(p.trialMem.width*PixPerDeg);
     p.trial.stimulus.pHeight=p.trial.stimulus.pWidth;
     
+    %determine stimulus center - higher numbers for Y are lower on the
+    %screen
+    p.trial.stimulus.centerY=p.trial.display.pHeight-p.trial.stimulus.pHeight/2;
+    p.trial.stimulus.centerX=p.trial.display.pWidth/2;
     
     %number of dots - density is in dots/deg^2, size in deg
     p.trial.stimulus.nrDots=round(p.trial.stimulus.dotDensity*p.trialMem.width*...
@@ -338,7 +342,7 @@ function showStimulus(p)
         p.trial.stimulus.randdir = randdir;
         Screen('DrawDots', p.trial.display.ptr, p.trial.stimulus.dotpos{p.trial.stimulus.frameI}, ...
             p.trial.stimulus.dotSizePix, p.trial.stimulus.dotColor, ...
-             [p.trial.display.pWidth/2 p.trial.display.pHeight/2],1);
+             [p.trial.stimulus.centerX p.trial.stimulus.centerY],1);
 
     end
 
