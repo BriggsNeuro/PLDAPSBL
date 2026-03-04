@@ -19,9 +19,9 @@ c{1}=generateCondList_Gellerm(p.trial.stimulus.cond.Ncond);
 
 
 %build complete set
-p.trial.allconditions{1} = c;
+p.trial.allconditions = c;
 p.trialMem.whichConditions = 0; %index into trialslist; 0 is easier for mod
-p.conditions=p.trial.allconditions; %set to first trials list
+p.conditions=p.trial.allconditions{1}; %set to first trials list
 
 
 p.trial.pldaps.finish = length(p.conditions);
@@ -31,4 +31,4 @@ p.trial.pldaps.finish = length(p.conditions);
 pds.behavior.resetSideCounter(p);
 
 %condition counter
-pds.behavior.resetCondCounter(p,p.trial.stimulus.cond.counterNames,1);
+pds.behavior.resetCondCounter(p,p.trial.stimulus.cond.counterNames);
