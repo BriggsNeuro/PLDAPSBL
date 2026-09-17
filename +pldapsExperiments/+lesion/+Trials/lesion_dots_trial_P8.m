@@ -1,5 +1,5 @@
-function lesion_dots_trial_P7Level(p,state)
-%determine psychometric function
+function lesion_dots_trial_P8(p,state)
+%manually adjust offset and coherence for post-lesion screening
 
 %use normal functionality in states
 pldapsDefaultTrialFunction(p,state);
@@ -216,6 +216,15 @@ function p=trialSetup(p)
         p.trialMem.matchType=p.trial.stimulus.iniMatchType;
     end
 
+    if ~isfield(p.trialMem,'offset')
+        p.trialMem.offset=p.trial.stimulus.offset;
+    end
+
+    if ~isfield(p.trialMem,'dotCoh')
+        p.trialMem.dotCoh=p.trial.stimulus.dotCoherence;
+    end
+
+
     %determine direction and side; we'll keep direction and adjust side as
     %needed for match condition for trials list 1
     %direction is tethered to response side, using that to make code
@@ -224,48 +233,34 @@ function p=trialSetup(p)
     p.trial.stimulus.dir = p.trial.stimulus.direction(sideResp);
 
 
-    if p.trialMem.whichConditions==0 %100 only; locking possible
+    %figure out side based on match type
+    switch p.trialMem.matchType
+        case 0 %full cross
+            p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
+            sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
+            p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
 
-        p.trial.stimulus.dotCoh=1;
-
-        %figure out side based on match type
-        switch p.trialMem.matchType
-            case 0 %full cross
-                p.trialMem.condIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx; %we need this for counting
-                sideIdx = mod(p.trialMem.condIdx-1,2)+1; %cond 1, 3 = L = side 1, cond 2, 4 = R = side 2
-                p.trial.stimulus.sSide = p.trial.stimulus.stimSide(sideIdx);
-
-            case 1 % either 0 & R, or 180 & L
-                if p.trial.stimulus.dir == 0
-                    p.trial.stimulus.sSide = 1;
-                    %overwrite condition idx to end up in the correct counter
-                    %bin
-                    p.trialMem.condIdx=2;
-                elseif p.trial.stimulus.dir == 180
-                    p.trial.stimulus.sSide = -1;
-                    p.trialMem.condIdx=3;
-                end
-            case 2 % either 0 & L, or 180 & R
-                if p.trial.stimulus.dir == 0
-                    p.trial.stimulus.sSide = -1;
-                    p.trialMem.condIdx=1;
-                elseif p.trial.stimulus.dir == 180
-                    p.trial.stimulus.sSide = 1;
-                    p.trialMem.condIdx=4;
-                end
-        end
-
-    else %variable coherence levels
-        cIdx=p.conditions{p.trial.pldaps.iTrial}.condIdx;
-        %p.trialMem.condIdx=cIdx; %we need this for counting
-       
-        cohIdx=mod(cIdx-1,5)+1;        
-        p.trial.stimulus.dotCoh=p.trial.stimulus.dotCoherence(cohIdx);
-
-        sideIdx=floor((cIdx-1)/5)+1; %sideIdx 1 & 3 -> L, 2 & 4 -> R
-        p.trial.stimulus.sSide = p.trial.stimulus.stimSide(rem(sideIdx-1,2)+1);
-
+        case 1 % either 0 & R, or 180 & L
+            if p.trial.stimulus.dir == 0
+                p.trial.stimulus.sSide = 1;
+                %overwrite condition idx to end up in the correct counter
+                %bin
+                p.trialMem.condIdx=2;
+            elseif p.trial.stimulus.dir == 180
+                p.trial.stimulus.sSide = -1;
+                p.trialMem.condIdx=3;
+            end
+        case 2 % either 0 & L, or 180 & R
+            if p.trial.stimulus.dir == 0
+                p.trial.stimulus.sSide = -1;
+                p.trialMem.condIdx=1;
+            elseif p.trial.stimulus.dir == 180
+                p.trial.stimulus.sSide = 1;
+                p.trialMem.condIdx=4;
+            end
     end
+
+    p.trial.stimulus.dotCoh=p.trialMem.dotCoh;
 
     % set up stimulus
     DegPerPix = p.trial.display.dWidth/p.trial.display.pWidth;
@@ -278,7 +273,7 @@ function p=trialSetup(p)
 
     %stimulus center
     p.trial.stimulus.centerX = p.trial.display.pWidth/2;
-    p.trial.stimulus.offsetPx=round(p.trial.stimulus.offset*PixPerDeg);
+    p.trial.stimulus.offsetPx=round(p.trialMem.offset*PixPerDeg);
     p.trial.stimulus.centerX=p.trial.stimulus.centerX+...
         p.trial.stimulus.sSide*p.trial.stimulus.offsetPx;
 
@@ -403,7 +398,7 @@ function showStimulus(p)
         p.trial.stimulus.randdir = randdir;
         p.trial.stimulus.dotdir{f} = randdir;
         p.trial.stimulus.noisevec=noisevec;
-        
+
         Screen('DrawDots', p.trial.display.ptr, p.trial.stimulus.dotpos{p.trial.stimulus.frameI}, ...
             p.trial.stimulus.dotSizePix, p.trial.stimulus.dotColor, ...
              [p.trial.stimulus.centerX p.trial.stimulus.centerY],1);
@@ -426,24 +421,26 @@ function cleanUpandSave(p)
     end
     
     %show stats
-    %pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, p.trialMem.condIdx); %updates counters
-    %pds.behavior.printCounter(p.trialMem.stats.sideCounter,p.trialMem.stats.sideCounterNames)
-    %pds.behavior.printCounter(p.trialMem.stats.condCounter,p.trialMem.stats.condCounterNames)
-
-    %show stats
-    lIdx=p.trialMem.whichConditions+1;
-    if lIdx==1 %first trials list, need condIdx to correctly count
-        pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, lIdx, ...
-            p.trialMem.condIdx); %updates counters
-    else
-        pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, lIdx);
-    end
+    pds.behavior.countTrialNew(p,p.trial.pldaps.goodtrial,1, 1, ...
+        p.trialMem.condIdx); %updates counters
 
     pds.behavior.printCounter(p.trialMem.stats.sideCounter,p.trialMem.stats.sideCounterNames)
-    pds.behavior.printCounter(p.trialMem.stats.condCounter{lIdx},p.trialMem.stats.condCounterNames{lIdx})
+    pds.behavior.printCounter(p.trialMem.stats.condCounter{1},p.trialMem.stats.condCounterNames{1})
 
 
     switch p.trial.userInput
+        case 1 %left key
+            p.trialMem.offset=p.trialMem.offset + (p.trial.stimulus.delta_offset);
+            disp(['Offset increased to ' num2str(p.trialMem.offset)])
+        case 2 %right key
+            p.trialMem.offset=p.trialMem.offset - (p.trial.stimulus.delta_offset);
+            disp(['Offset decreased to ' num2str(p.trialMem.offset)])
+        case 3 %up
+            p.trialMem.dotCoh=p.trialMem.dotCoh + (p.trial.stimulus.delta_coh);
+            disp(['Coherence increased to ' num2str(p.trialMem.dotCoh)])
+        case 4 %down
+            p.trialMem.dotCoh=p.trialMem.dotCoh - (p.trial.stimulus.delta_coh);
+            disp(['Coherence decreased to ' num2str(p.trialMem.dotCoh)])
         case 5 %M key
             p.trialMem.matchType = 2;
             disp('Matching Response Condition if [Bad% Good%][Good% Bad%]')
@@ -454,6 +451,7 @@ function cleanUpandSave(p)
             p.trialMem.matchType = 0;
             disp('All 4 Response Conditions')
     end
+
 
 %% Helper functions
 %-------------------------------------------------------------------%

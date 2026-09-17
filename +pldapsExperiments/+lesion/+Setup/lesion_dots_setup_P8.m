@@ -1,18 +1,18 @@
-function p = lesion_dots_setup_P7Level(p)
+function p = lesion_dots_setup_P8(p)
 %This phase adjusts the stimulus duration
 
 %% basic definitions
 p = pdsDefaultTrialStructureBL(p); 
 
 %% set the trial function: the function that gets called for each frame state
-p.trial.pldaps.trialFunction='pldapsExperiments.lesion.Trials.lesion_dots_trial_P7Level';
+p.trial.pldaps.trialFunction='pldapsExperiments.lesion.Trials.lesion_dots_trial_P8';
 
 %% set general parameters
 p.trial.stimulus.forceCorrect = 1;
 
 
 %% conditions:
-c{1}=generateCondList_Gellerm(p.trial.stimulus.cond.Ncond(1));
+c{1}=generateCondList_Gellerm(p.trial.stimulus.cond.Ncond);
 
 
 p.trial.allconditions = c;
