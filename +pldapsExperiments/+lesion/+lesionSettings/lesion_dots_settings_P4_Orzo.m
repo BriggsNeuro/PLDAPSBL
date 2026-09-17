@@ -1,11 +1,11 @@
-function s = lesion_dots_settings_P4_XXXX0
+function s = lesion_dots_settings_P4_Orzo
 %This phase adjusts the stimulus size  
 
 
 %%%these parameters can get changed
 s.behavior.reward.amount = [0.08 0.25 0.25];
-s.stimulus.width=50; %start value (deg)
-s.stimulus.delta_width = 5; %step size using keys (deg)
+s.stimulus.width=10; %start value (deg)
+s.stimulus.delta_width = 1; %step size using keys (deg)
 s.display.viewdist = 56; %cm
 s.stimulus.duration.ITI = 0.2;
 
