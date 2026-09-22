@@ -13,6 +13,7 @@ p.trial.stimulus.forceCorrect = 1;
 
 %% conditions:
 c{1}=generateCondList_Gellerm(p.trial.stimulus.cond.Ncond(1));
+c{2}=generateCondList_Gellerm(p.trial.stimulus.cond.Ncond(2));
 
 
 p.trial.allconditions = c;
